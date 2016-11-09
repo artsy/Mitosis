@@ -2,7 +2,7 @@
 
 import { api } from "../facebook/api"
 import { sendTextMessage } from "./webhook"
-import { SERVER_URL } from "../globals"
+import { BOT_SERVER_URL } from "../globals"
 
 // If we receive a text message, check to see if it matches any special
 // keywords and send back the corresponding example. Otherwise, just echo
@@ -80,7 +80,7 @@ function sendImageMessage(recipientId: string) {
       attachment: {
         type: "image",
         payload: {
-          url: SERVER_URL + "/assets/rift.png"
+          url: BOT_SERVER_URL + "/assets/rift.png"
         }
       }
     }
@@ -101,7 +101,7 @@ function sendGifMessage(recipientId: string) {
       attachment: {
         type: "image",
         payload: {
-          url: SERVER_URL + "/assets/instagram_logo.gif"
+          url: BOT_SERVER_URL + "/assets/instagram_logo.gif"
         }
       }
     }
@@ -123,7 +123,7 @@ function sendAudioMessage(recipientId: string) {
       attachment: {
         type: "audio",
         payload: {
-          url: SERVER_URL + "/assets/sample.mp3"
+          url: BOT_SERVER_URL + "/assets/sample.mp3"
         }
       }
     }
@@ -145,7 +145,7 @@ function sendVideoMessage(recipientId: string) {
       attachment: {
         type: "video",
         payload: {
-          url: SERVER_URL + "/assets/allofus480.mov"
+          url: BOT_SERVER_URL + "/assets/allofus480.mov"
         }
       }
     }
@@ -167,7 +167,7 @@ function sendFileMessage(recipientId: string) {
       attachment: {
         type: "file",
         payload: {
-          url: SERVER_URL + "/assets/test.txt"
+          url: BOT_SERVER_URL + "/assets/test.txt"
         }
       }
     }
@@ -230,7 +230,7 @@ function sendGenericMessage(recipientId: string) {
             title: "rift",
             subtitle: "Next-generation virtual reality",
             item_url: "https://www.oculus.com/en-us/rift/",
-            image_url: SERVER_URL + "/assets/rift.png",
+            image_url: BOT_SERVER_URL + "/assets/rift.png",
             buttons: [{
               type: "web_url",
               url: "https://www.oculus.com/en-us/rift/",
@@ -244,7 +244,7 @@ function sendGenericMessage(recipientId: string) {
             title: "touch",
             subtitle: "Your Hands, Now in VR",
             item_url: "https://www.oculus.com/en-us/touch/",
-            image_url: SERVER_URL + "/assets/touch.png",
+            image_url: BOT_SERVER_URL + "/assets/touch.png",
             buttons: [{
               type: "web_url",
               url: "https://www.oculus.com/en-us/touch/",
@@ -291,14 +291,14 @@ function sendReceiptMessage(recipientId: string) {
             quantity: 1,
             price: 599.00,
             currency: "USD",
-            image_url: SERVER_URL + "/assets/riftsq.png"
+            image_url: BOT_SERVER_URL + "/assets/riftsq.png"
           }, {
             title: "Samsung Gear VR",
             subtitle: "Frost White",
             quantity: 1,
             price: 99.99,
             currency: "USD",
-            image_url: SERVER_URL + "/assets/gearvrsq.png"
+            image_url: BOT_SERVER_URL + "/assets/gearvrsq.png"
           }],
           address: {
             street_1: "1 Hacker Way",
@@ -431,7 +431,7 @@ function sendAccountLinking(recipientId: string) {
           text: "Welcome. Link your account.",
           buttons: [{
             type: "account_link",
-            url: SERVER_URL + "/authorize"
+            url: BOT_SERVER_URL + "/authorize"
           }]
         }
       }

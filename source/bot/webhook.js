@@ -4,7 +4,8 @@ import type { $Request, $Response } from "express"
 import { api } from "../facebook/api"
 import { receivedAuthentication } from "./user-setup"
 import { exampleFallbacks } from "./facebook_examples"
-import { artsyArtworks, callbackForFavouritingArtwork } from "./artsy-api"
+import { artsyArtworks } from "./contexts/artworks"
+import { handlePostbacks } from "./postback-manager"
 
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
@@ -51,12 +52,6 @@ export function botResponse(req: $Request, res: $Response) {
  * This event is called when a message is sent to your page. The 'message'
  * object format can vary depending on the kind of message that was received.
  * Read more at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-received
- *
- * For this example, we're going to echo any text that we get. If we get some
- * special keywords ('button', 'generic', 'receipt'), then we'll send back
- * examples of those bubbles to illustrate the special message bubbles we've
- * created. If we receive a message with an attachment (image, video, audio),
- * then we'll simply confirm that we've received the attachment.
  *
  */
 function receivedMessage(event: any) {
@@ -151,11 +146,7 @@ function receivedPostback(event: any) {
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback)
 
-  if (callbackForFavouritingArtwork(senderID, payload)) { return }
-
-  // When a postback is called, we'll send a message back to the sender to
-  // let them know it was successful
-  sendTextMessage(senderID, "Postback called")
+  handlePostbacks(senderID, payload)
 }
 
 /*
@@ -187,10 +178,16 @@ function receivedMessageRead(event: any) {
  */
 function receivedAccountLink(event: any) {
   var senderID = event.sender.id
-  // var recipientID = event.recipient.id
 
   var status = event.account_linking.status
   var authCode = event.account_linking.authorization_code
+
+  // TODO: This is where we hook up a recipient to Artsy,
+  //       We should also correctly handle unauth'd users.
+  //       even though we will need to make xapp'd requests
+  //
+
+  // var recipientID = event.recipient.id
 
   console.log("Received account link event with for user %d with status %s " +
     "and auth code %s ", senderID, status, authCode)
@@ -200,7 +197,7 @@ function receivedAccountLink(event: any) {
  * Send a text message using the Send API.
  *
  */
-export function sendTextMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT") {
+export function sendTextMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT"): Promise<any> {
   var messageData = {
     recipient: {
       id: recipientId
@@ -211,6 +208,6 @@ export function sendTextMessage(recipientId: string, messageText: string, metada
     }
   }
 
-  api(messageData)
+  return api(messageData)
 }
 
