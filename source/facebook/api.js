@@ -55,13 +55,12 @@ export const fbapi = {
   },
 
 /**
- * Send a generic message, I tend to think of this as a
- * carousel of items to send.
+ * Send a collection of elements, effectively making a carousel
  *
  * @param {string} recipientId
  * @param {GenericElement} elements
  */
-  sendGenericMessage(recipientId: string, elements: GenericElement) {
+  elementCarousel(recipientId: string, elements: GenericElement[]) {
     return api({
       recipient: {
         id: recipientId

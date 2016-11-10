@@ -1,10 +1,8 @@
 // @flow
 
-import { api, fbapi } from "../../facebook/api"
+import { fbapi } from "../../facebook/api"
 
-// import { sendTextMessage } from "../webhook"
-
-function elementForArtwork(artwork: any) {
+export function elementForArtwork(artwork: any) {
   const url = `https://artsy.net${artwork.href}`
   return {
     title: artwork.title,
@@ -36,7 +34,7 @@ export async function callbackForFavouritingArtwork(senderID: string, payload: s
   await fbapi.quickReply(senderID, `Saved, ${name} to your Favourites`, [
     { content_type: "text", title: "Favourite Artist", payload: `favourite-artist::${artistIDAndName}` },
     { content_type: "text", title: `About ${name}`, payload: `show-artist::${artistIDAndName}` },
-    { content_type: "text", title: "About Expressionism", payload: `open-gene::${geneIDAndName}` }
+    { content_type: "text", title: "More from Expressionism", payload: `open-gene::${geneIDAndName}` }
   ])
   await fbapi.stopTyping(senderID)
 }
@@ -55,19 +53,6 @@ export function artsyArtworks(recipientId: string) {
     ]
   }
 
-  api({
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [elementForArtwork(artwork)]
-        }
-      }
-    }
-  })
+  fbapi.elementCarousel(recipientId, [elementForArtwork(artwork)])
 }
 

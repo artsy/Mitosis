@@ -4,14 +4,15 @@
 export interface QuickReply {
   content_type: "text",
   title: string,
-  payload: ?string
+  payload?: string
 }
 
 /** Button for attaching to images */
 export interface FBButton {
   type: "web_url" | "postback",
   title: string,
-  url: string
+  url?: ?string,
+  payload?: ?string
 }
 
 export interface GenericElement {
@@ -19,5 +20,5 @@ export interface GenericElement {
   subtitle: string,
   item_url: string,
   image_url: string,
-  buttons: FBButton[]
+  buttons?: Array<FBButton>
 }

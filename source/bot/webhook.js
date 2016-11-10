@@ -57,6 +57,9 @@ export function botResponse(req: $Request, res: $Response) {
 function receivedMessage(event: any) {
   var senderID = event.sender.id
   var recipientID = event.recipient.id
+
+  // TODO: Get a user access token from a db
+
   var timeOfMessage = event.timestamp
   var message = event.message
 
@@ -84,7 +87,7 @@ function receivedMessage(event: any) {
     console.log("Quick reply for message %s with payload %s",
       messageId, quickReplyPayload)
 
-    sendTextMessage(senderID, "Quick reply tapped")
+    handlePostbacks(senderID, quickReplyPayload)
     return
   }
 

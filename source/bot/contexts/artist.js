@@ -1,21 +1,49 @@
 // @flow
 
 import { fbapi } from "../../facebook/api"
+import { metaphysicsQuery } from "../artsy-api"
+import { elementForArtwork } from "./artworks"
 
-export async function callbackForShowingArtist(senderID: string, payload: string): ?Promise<void> {
+export function elementForArtist(artist: any) {
+  const url = `https://artsy.net${artist.href}`
+  return {
+    title: artist.name,
+    subtitle: artist.blurb,
+    item_url: url,
+    image_url: artist.images[0].url,
+    buttons: [{
+      type: "web_url",
+      url: url,
+      title: "Open on Artsy"
+    }, {
+      type: "postback",
+      title: "Follow",
+      payload: `artist_follow::${artist.id}::${artist.title}`
+    }]
+  }
+}
+
+export async function callbackForShowingArtist(senderID: string, payload: string) {
+  const apiToken = "asdasd"
   const name = payload.split("::").pop()
-  // const artworkIDAndName = payload.split("::").splice(1).join("::")
-  // TODO: Save to favs
-  // TODO: Get artwork details for Artist
-  // TODO: Get Gene deets for Artwork
+
+  // TOOD: Get API token DI'd in
+  // TODO: Get Gene deets for Artist
+  // TODO: Get Show deets?
+  // TODO: Get a few artworks
+
   const artistIDAndName = "artistID::Artist Name"
   const geneIDAndName = "geneID::Gene Name"
 
-  await fbapi.startTyping(senderID)
-  await fbapi.quickReply(senderID, `Saved, ${name} to your Favourites`, [
-    { content_type: "text", title: "Favourite Artist", payload: `favourite-artist::${artistIDAndName}` },
+  fbapi.startTyping(senderID)
+  await metaphysicsQuery("{}", apiToken)
+  await fbapi.quickReply(senderID, "", [
+    { content_type: "text", title: "Favourite", payload: `favourite-artist::${artistIDAndName}` },
     { content_type: "text", title: `About ${name}`, payload: `show-artist::${artistIDAndName}` },
     { content_type: "text", title: "About Expressionism", payload: `open-gene::${geneIDAndName}` }
+  ])
+  await fbapi.elementCarousel(senderID, [
+    elementForArtwork({ id: "ok", title: "ok", href: "/artwork/OK", images: [{id: "", url: ""}] })
   ])
   await fbapi.stopTyping(senderID)
 }
