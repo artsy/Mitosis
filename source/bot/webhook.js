@@ -6,6 +6,7 @@ import { receivedAuthentication } from "./user-setup"
 import { exampleFallbacks } from "./facebook_examples"
 import { artsyArtworks } from "./contexts/artworks"
 import { handlePostbacks } from "./postback-manager"
+import type { MessageContext } from "./types"
 
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
@@ -77,6 +78,13 @@ function receivedMessage(event: any) {
   var messageAttachments = message.attachments
   var quickReply = message.quick_reply
 
+  const context: MessageContext = {
+    fbSenderID: senderID,
+    artsyUserID: "null",
+    userToken: "thingy",
+    xappToken: "ok"
+  }
+
   if (isEcho) {
     // Just logging message echoes to console
     console.log("Received echo for message %s and app %d with metadata %s",
@@ -87,7 +95,7 @@ function receivedMessage(event: any) {
     console.log("Quick reply for message %s with payload %s",
       messageId, quickReplyPayload)
 
-    handlePostbacks(senderID, quickReplyPayload)
+    handlePostbacks(context, quickReplyPayload)
     return
   }
 
@@ -149,7 +157,14 @@ function receivedPostback(event: any) {
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback)
 
-  handlePostbacks(senderID, payload)
+  const context: MessageContext = {
+    fbSenderID: senderID,
+    artsyUserID: "null",
+    userToken: "thingy",
+    xappToken: "ok"
+  }
+
+  handlePostbacks(context, payload)
 }
 
 /*

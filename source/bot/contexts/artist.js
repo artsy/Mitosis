@@ -1,8 +1,9 @@
 // @flow
 
 import { fbapi } from "../../facebook/api"
-import { metaphysicsQuery } from "../artsy-api"
+import { metaphysicsQuery, gravityPost } from "../artsy-api"
 import { elementForArtwork } from "./artworks"
+import type { MessageContext } from "../types"
 
 export function elementForArtist(artist: any) {
   const url = `https://artsy.net${artist.href}`
@@ -23,9 +24,10 @@ export function elementForArtist(artist: any) {
   }
 }
 
-export async function callbackForShowingArtist(senderID: string, payload: string) {
+export async function callbackForShowingArtist(context: MessageContext, payload: string) {
   const apiToken = "asdasd"
   const name = payload.split("::").pop()
+  const artistID = "OK"
 
   // TOOD: Get API token DI'd in
   // TODO: Get Gene deets for Artist
@@ -35,15 +37,17 @@ export async function callbackForShowingArtist(senderID: string, payload: string
   const artistIDAndName = "artistID::Artist Name"
   const geneIDAndName = "geneID::Gene Name"
 
-  fbapi.startTyping(senderID)
+  fbapi.startTyping(context.fbSenderID)
+  await gravityPost({ }, `/api/v1/collection/saved-artwork/artwork/${artistID}`, apiToken)
+
   await metaphysicsQuery("{}", apiToken)
-  await fbapi.quickReply(senderID, "", [
+  await fbapi.quickReply(context.fbSenderID, "", [
     { content_type: "text", title: "Favourite", payload: `favourite-artist::${artistIDAndName}` },
     { content_type: "text", title: `About ${name}`, payload: `show-artist::${artistIDAndName}` },
     { content_type: "text", title: "About Expressionism", payload: `open-gene::${geneIDAndName}` }
   ])
-  await fbapi.elementCarousel(senderID, [
+  await fbapi.elementCarousel(context.fbSenderID, [
     elementForArtwork({ id: "ok", title: "ok", href: "/artwork/OK", images: [{id: "", url: ""}] })
   ])
-  await fbapi.stopTyping(senderID)
+  await fbapi.stopTyping(context.fbSenderID)
 }

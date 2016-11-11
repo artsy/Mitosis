@@ -1,6 +1,7 @@
 // @flow
 
 import { fbapi } from "../../facebook/api"
+import type { MessageContext } from "../types"
 
 export function elementForArtwork(artwork: any) {
   const url = `https://artsy.net${artwork.href}`
@@ -21,7 +22,7 @@ export function elementForArtwork(artwork: any) {
   }
 }
 
-export async function callbackForFavouritingArtwork(senderID: string, payload: string): ?Promise<void> {
+export async function callbackForFavouritingArtwork(context: MessageContext, payload: string): ?Promise<void> {
   const name = payload.split("::").pop()
   // const artworkIDAndName = payload.split("::").splice(1).join("::")
   // TODO: Save to favs
@@ -30,13 +31,13 @@ export async function callbackForFavouritingArtwork(senderID: string, payload: s
   const artistIDAndName = "artistID::Artist Name"
   const geneIDAndName = "geneID::Gene Name"
 
-  await fbapi.startTyping(senderID)
-  await fbapi.quickReply(senderID, `Saved, ${name} to your Favourites`, [
+  await fbapi.startTyping(context.fbSenderID)
+  await fbapi.quickReply(context.fbSenderID, `Saved, ${name} to your Favourites`, [
     { content_type: "text", title: "Favourite Artist", payload: `favourite-artist::${artistIDAndName}` },
     { content_type: "text", title: `About ${name}`, payload: `show-artist::${artistIDAndName}` },
     { content_type: "text", title: "More from Expressionism", payload: `open-gene::${geneIDAndName}` }
   ])
-  await fbapi.stopTyping(senderID)
+  await fbapi.stopTyping(context.fbSenderID)
 }
 
 export function artsyArtworks(recipientId: string) {

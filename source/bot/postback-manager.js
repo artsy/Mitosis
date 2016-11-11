@@ -1,6 +1,7 @@
 // @flow
 
 import { callbackForFavouritingArtwork } from "./contexts/artworks"
+import type { MessageContext } from "./types"
 
 /**
  * Handles passing postbacks around the system
@@ -8,8 +9,8 @@ import { callbackForFavouritingArtwork } from "./contexts/artworks"
  * @param {string} senderID
  * @param {string} payload
  */
-export function handlePostbacks(senderID: string, payload: string) {
+export function handlePostbacks(context: MessageContext, payload: string) {
   if (payload.startsWith("artwork_favourite::")) {
-    callbackForFavouritingArtwork(senderID, payload)
+    callbackForFavouritingArtwork(context, payload)
   }
 }
