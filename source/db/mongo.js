@@ -1,6 +1,7 @@
 // @flow
 
-import { mongojs } from "mongojs"
+const mongojs = require("mongojs")
+
 import { getXappToken } from "../bot/artsy-api"
 import type { MitosisUser } from "../bot/types"
 import { DB_URL } from "../globals"

@@ -35,16 +35,14 @@ export async function callbackForShowingArtist(context: MitosisUser, payload: st
   const geneIDAndName = "geneID::Gene Name"
 
   fbapi.startTyping(context.fbSenderID)
+  const data = await metaphysicsQuery(artistQuery(artistID), context)
 
-  await metaphysicsQuery(artistQuery(artistID), context)
-  await fbapi.quickReply(context.fbSenderID, "", [
+  await fbapi.elementCarousel(context.fbSenderID, data.data.artist.artworks.map(a => elementForArtwork(a)))
+  await fbapi.quickReply(context.fbSenderID, `About ${artistName}`, [
     { content_type: "text", title: "Favourite", payload: `favourite-artist::${artistIDAndName}` },
     { content_type: "text", title: `About ${artistName}`, payload: `show-artist::${artistIDAndName}` },
-    { content_type: "text", title: `Articles about ${artistName}`, payload: `open-gene::${geneIDAndName}` },
+    { content_type: "text", title: "Related Articles", payload: `open-gene::${geneIDAndName}` },
     { content_type: "text", title: "More Artworks", payload: `show-artist-artworks::${artistIDAndName}` }
-  ])
-  await fbapi.elementCarousel(context.fbSenderID, [
-    elementForArtwork({ id: "ok", title: "ok", href: "/artwork/OK", images: [{id: "", url: ""}] })
   ])
   await fbapi.stopTyping(context.fbSenderID)
 }
@@ -66,6 +64,14 @@ const artistQuery = (artistID: string) => `
       id
       is_displayable
       is_active
+    }
+    artworks(size: 5, sort: iconicity_desc, published: true) {
+      id
+      title
+      description
+      images {
+        url
+      }
     }
     articles{
       title,

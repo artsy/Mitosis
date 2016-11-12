@@ -34,7 +34,7 @@
     "pg-then": "^1.2.1"
   },
   "engines": {
-    "node": "~4.1.2"
+    "node": "7.1.0"
   },
   "devDependencies": {
     "babel-watch": "^2.0.3",

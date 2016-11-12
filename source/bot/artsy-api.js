@@ -2,7 +2,7 @@
 
 import fetch from "node-fetch"
 import type { GraphQLQuery, MitosisUser } from "./types"
-import { ARTSY_API_CLIENT, ARTSY_API_SECRET, GRAVITY_URL } from "../globals"
+import { ARTSY_API_CLIENT, ARTSY_API_SECRET, GRAVITY_URL, METAPHYSICS_URL } from "../globals"
 
 /**
  * Get the API header creds required to submit API requests
@@ -28,7 +28,7 @@ function headerAuthParams(user: MitosisUser): any {
 export async function getXappToken(): Promise<any> {
   const path = "/api/v1/xapp_token"
   const clientAndSecret = `client_id=${ARTSY_API_CLIENT}&client_secret=${ARTSY_API_SECRET}`
-  return fetch(`${GRAVITY_URL}/api/v1/${path}?${clientAndSecret}`, {
+  return fetch(`${GRAVITY_URL}${path}?${clientAndSecret}`, {
     method: "GET"
   })
   .then(checkStatus)
@@ -42,18 +42,12 @@ export async function getXappToken(): Promise<any> {
  * @returns {Promise<any>}
  */
 export function metaphysicsQuery(query: GraphQLQuery, user: MitosisUser): Promise<any> {
-  return new Promise((resolve: any, reject: any) => {
-    resolve({
-      id: "ryohei-usui-ennui",
-      title: "Ennui",
-      href: "/artwork/ryohei-usui-ennui",
-      description: "Ed Ruscha defies categorization with his diverse output of photographic books and tongue-in-cheek photo-collages, paintings, and drawings. Insects as a subject evoke both Dadaist and Surrealistic tendencies, and the physical environment of the artist's studio. Why insects? \"Because I have a jillion cockroaches around my studio. I love them, but I don’t want them around.\"",
-      images: [{
-        id: "5820f5ef9a3cdd58ca00060e",
-        url: "https://d32dm0rphc51dk.cloudfront.net/jPpFqKJywfT_g5f81BB-JQ/normalized.jpg"
-      }]
-    })
+  return fetch(`${METAPHYSICS_URL}?query=${encodeURIComponent(query)}`, {
+    method: "GET",
+    headers: headerAuthParams(user)
   })
+  .then(checkStatus)
+  .then(parseJSON)
 }
 
 /**
@@ -66,7 +60,7 @@ export function metaphysicsQuery(query: GraphQLQuery, user: MitosisUser): Promis
  */
 export function gravityPost(body: any = {}, path: string, user: MitosisUser): Promise<any> {
   // TODO: Get token
-  return fetch(`${GRAVITY_URL}/api/v1/${path}`, {
+  return fetch(`${GRAVITY_URL}${path}`, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json", ...headerAuthParams(user) }

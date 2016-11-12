@@ -9,6 +9,8 @@ import { handlePostbacks } from "./postback-manager"
 import type { MitosisUser } from "./types"
 import { getOrCreateMitosisUser } from "../db/mongo"
 
+import { callbackForShowingArtist } from "./contexts/artist"
+
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
 
@@ -98,6 +100,10 @@ async function receivedMessage(event: any) {
     switch (messageText) {
       case "artwork":
         artsyArtworks(senderID)
+        break
+
+      case "artist":
+        callbackForShowingArtist(context, "artit::banksy::Banksy")
         break
 
       default:
