@@ -6,7 +6,8 @@ import { receivedAuthentication } from "./user-setup"
 import { exampleFallbacks } from "./facebook_examples"
 import { artsyArtworks } from "./contexts/artworks"
 import { handlePostbacks } from "./postback-manager"
-import type { MessageContext } from "./types"
+import type { MitosisUser } from "./types"
+import { getOrCreateMitosisUser } from "../db/mongo"
 
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
@@ -55,11 +56,12 @@ export function botResponse(req: $Request, res: $Response) {
  * Read more at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-received
  *
  */
-function receivedMessage(event: any) {
+async function receivedMessage(event: any) {
   var senderID = event.sender.id
   var recipientID = event.recipient.id
 
   // TODO: Get a user access token from a db
+  const context = await getOrCreateMitosisUser(senderID)
 
   var timeOfMessage = event.timestamp
   var message = event.message
@@ -78,7 +80,7 @@ function receivedMessage(event: any) {
   var messageAttachments = message.attachments
   var quickReply = message.quick_reply
 
-  const context: MessageContext = {
+  const context: MitosisUser = {
     fbSenderID: senderID,
     artsyUserID: "null",
     userToken: "thingy",
@@ -157,7 +159,7 @@ function receivedPostback(event: any) {
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback)
 
-  const context: MessageContext = {
+  const context: MitosisUser = {
     fbSenderID: senderID,
     artsyUserID: "null",
     userToken: "thingy",

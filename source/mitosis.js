@@ -11,6 +11,7 @@ import bodyParser from "body-parser"
 // app.use(bodyParser.json({ verify: verifyRequestSignature }))
 
 require("./globals")
+require("./db/mongo")
 
 // Error logging
 process.on("unhandledRejection", function(reason: string, p: any) {

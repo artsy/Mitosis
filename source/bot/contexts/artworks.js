@@ -1,7 +1,8 @@
 // @flow
 
 import { fbapi } from "../../facebook/api"
-import type { MessageContext } from "../types"
+import type { MitosisUser } from "../types"
+import { metaphysicsQuery, gravityPost } from "../artsy-api"
 
 export function elementForArtwork(artwork: any) {
   const url = `https://artsy.net${artwork.href}`
@@ -22,19 +23,21 @@ export function elementForArtwork(artwork: any) {
   }
 }
 
-export async function callbackForFavouritingArtwork(context: MessageContext, payload: string): ?Promise<void> {
-  const name = payload.split("::").pop()
-  // const artworkIDAndName = payload.split("::").splice(1).join("::")
+export async function callbackForFavouritingArtwork(context: MitosisUser, payload: string): ?Promise<void> {
+  const [, artworkID, artworkName] = payload.split("::")
   // TODO: Save to favs
   // TODO: Get artwork details for Artist
+  const artistIDAndName = ""
   // TODO: Get Gene deets for Artwork
-  const artistIDAndName = "artistID::Artist Name"
+
   const geneIDAndName = "geneID::Gene Name"
 
-  await fbapi.startTyping(context.fbSenderID)
-  await fbapi.quickReply(context.fbSenderID, `Saved, ${name} to your Favourites`, [
+  fbapi.startTyping(context.fbSenderID)
+  await gravityPost({ user_id: context.artsyUserID }, `/api/v1/collection/saved-artwork/artwork/${artworkID}`, context)
+  await metaphysicsQuery(artworkQuery(artworkID), context)
+  await fbapi.quickReply(context.fbSenderID, `Saved, ${artworkName} to your Favourites`, [
     { content_type: "text", title: "Favourite Artist", payload: `favourite-artist::${artistIDAndName}` },
-    { content_type: "text", title: `About ${name}`, payload: `show-artist::${artistIDAndName}` },
+    { content_type: "text", title: `About ${artworkName}`, payload: `show-artist::${artistIDAndName}` },
     { content_type: "text", title: "More from Expressionism", payload: `open-gene::${geneIDAndName}` }
   ])
   await fbapi.stopTyping(context.fbSenderID)
@@ -57,3 +60,20 @@ export function artsyArtworks(recipientId: string) {
   fbapi.elementCarousel(recipientId, [elementForArtwork(artwork)])
 }
 
+const artworkQuery = (artworkID: string) => `
+{
+  artwork(id: "${artworkID}"){
+    id
+    title
+    description
+    href
+    images {
+      url
+    }
+    artists {
+      id
+      name
+    }
+  }
+}
+`

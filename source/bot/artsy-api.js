@@ -1,7 +1,7 @@
 // @flow
 
 import fetch from "node-fetch"
-import type { GraphQLQuery, APIToken } from "./types"
+import type { GraphQLQuery, MitosisUser } from "./types"
 import { GRAVITY_URL } from "../globals"
 
 /**
@@ -10,7 +10,7 @@ import { GRAVITY_URL } from "../globals"
  * @param {string} query the request
  * @returns {Promise<any>}
  */
-export function metaphysicsQuery(query: GraphQLQuery, apiToken: APIToken): Promise<any> {
+export function metaphysicsQuery(query: GraphQLQuery, user: MitosisUser): Promise<any> {
   return new Promise((resolve: any, reject: any) => {
     resolve({
       id: "ryohei-usui-ennui",
@@ -29,11 +29,13 @@ export function metaphysicsQuery(query: GraphQLQuery, apiToken: APIToken): Promi
  * Runs a query against gravity, e.g. favouriting an Artwork
  *
  * @export
- * @param  {any} body
+ * @param {any} body
  * @param {APIToken} apiToken
  * @returns {Promise<any>}
  */
-export function gravityPost(body: any = {}, path: string, apiToken: APIToken): Promise<any> {
+export function gravityPost(body: any = {}, path: string, user: MitosisUser): Promise<any> {
+  // TODO: Get token
+  const apiToken = user.userToken
   return fetch(`${GRAVITY_URL}/api/v1/${path}?access_token=${apiToken}`, {
     method: "POST",
     body: JSON.stringify(body),

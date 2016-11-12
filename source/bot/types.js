@@ -9,7 +9,7 @@ export type APIToken = string
  * The fb/artsy user context for recieving/sending messages.
  * If you have a `userID`, there should be a `userToken`.
  */
-export interface MessageContext {
+export interface MitosisUser {
   /** Guest token */
   xappToken?: APIToken,
   /** Logged in user token */
