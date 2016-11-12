@@ -8,6 +8,7 @@ export type APIToken = string
 /**
  * The fb/artsy user context for recieving/sending messages.
  * If you have a `userID`, there should be a `userToken`.
+ * No functions, needs to be storable in db.
  */
 export interface MitosisUser {
   /** Guest token */

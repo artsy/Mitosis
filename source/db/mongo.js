@@ -1,9 +1,11 @@
 // @flow
 
 import { mongojs } from "mongojs"
+import { getXappToken } from "../bot/artsy-api"
 import type { MitosisUser } from "../bot/types"
+import { DB_URL } from "../globals"
 
-const db = mongojs("mongodb://localhost:27017/", ["users"])
+const db = mongojs(`mongodb://${DB_URL}`, ["users"])
 
 /**
  * Gets a User for a fb sender ID
@@ -15,13 +17,16 @@ const db = mongojs("mongodb://localhost:27017/", ["users"])
 export function getOrCreateMitosisUser(senderID: string): Promise<MitosisUser> {
   return new Promise((resolve: any, reject: any) => {
     // Check for existence
-    db.users.findOne({ fbSenderID: senderID }, (err, doc) => {
+    db.users.findOne({ fbSenderID: senderID }, async (err, doc) => {
       if (err) { return reject(err) }
       if (doc) { return resolve(doc) }
 
       // Make a new one if not
+      const data = await getXappToken()
+
       const newUser: MitosisUser = {
-        fbSenderID: senderID
+        fbSenderID: senderID,
+        xappToken: data.xapp_token
       }
       db.users.insert(newUser, (err, doc) => {
         if (err) { return reject(err) }

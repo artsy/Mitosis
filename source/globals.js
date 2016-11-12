@@ -40,8 +40,11 @@ export const METAPHYSICS_URL = getEnv("METAPHYSICS_URL", "metaphysicsURL")
 /** The front-end URL route  */
 export const WEB_URL = getEnv("WEB_URL", "webURL")
 
+/** Mongo db URL  */
+export const DB_URL = getEnv("DB_URL", "databaseURL")
+
 // Normal validation stuff
-if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && BOT_SERVER_URL && ARTSY_API_CLIENT && ARTSY_API_SECRET && GRAVITY_URL && METAPHYSICS_URL && WEB_URL)) {
+if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && BOT_SERVER_URL && ARTSY_API_CLIENT && ARTSY_API_SECRET && GRAVITY_URL && METAPHYSICS_URL && WEB_URL && DB_URL)) {
   console.error("Missing config values")
   process.exit(1)
 }

@@ -50,7 +50,7 @@ export async function callbackForShowingArtist(context: MitosisUser, payload: st
 }
 
 export async function callbackForSavingArtist(context: MitosisUser, payload: string) {
-  const [, artistID, artistName] = payload.split("::")
+  const [, artistID] = payload.split("::")
   await gravityPost({ artist_id: artistID }, "/api/v1/me/follow/artist", context)
 }
 
