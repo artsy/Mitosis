@@ -38,7 +38,7 @@ export const artistQuery = (artistID: string) => `
         url
       }
     }
-    articles{
+    articles {
       title,
       href
       thumbnail_image {
@@ -47,6 +47,22 @@ export const artistQuery = (artistID: string) => `
     }
     artists {
       name
+    }
+  }
+}
+`
+
+export const artistArticlesQuery = (artistID: string) => `
+{
+  artist(id:"${artistID}") {
+    id
+    name
+    articles {
+      title,
+      href
+      thumbnail_image {
+        url
+      }
     }
   }
 }

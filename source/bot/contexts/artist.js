@@ -3,9 +3,10 @@
 import { fbapi } from "../../facebook/api"
 import { metaphysicsQuery } from "../artsy-api"
 import { elementForArtwork } from "./artwork/element"
-import type { MitosisUser } from "../types"
-import { artistArtworksQuery, artistQuery } from "./artist/queries"
 import { elementForArtist } from "./artist/element"
+import { elementForArticle } from "./article/element"
+import type { MitosisUser } from "../types"
+import { artistArtworksQuery, artistQuery, artistArticlesQuery } from "./artist/queries"
 
 // Keys for callback resolution
 
@@ -27,6 +28,7 @@ export function handleArtistCallbacks(context: MitosisUser, payload: string) {
   if (payload.startsWith(ArtistShowArtworksKey)) { callbackForArtistArtworks(context, payload) }
   if (payload.startsWith(ArtistShowKey)) { callbackForShowingArtist(context, payload) }
   if (payload.startsWith(ArtistFavouriteKey)) { callbackForSavingArtist(context, payload) }
+  if (payload.startsWith(ArtistArticlesKey)) { callbackForArticles(context, payload) }
 }
 
 // General overview, show a few artworks too
@@ -36,17 +38,15 @@ async function callbackForArtistOverview(context: MitosisUser, payload: string) 
 
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artistQuery(artistID), context)
+  const hasArticles = results.data.artist.articles.length > 0
 
-  const hasArticles = results.artist.articles.length > 0
-
-  await fbapi.elementCarousel(context.fbSenderID, results.results.artist.artworks.map(a => elementForArtwork(a)))
+  await fbapi.elementCarousel(context.fbSenderID, results.data.artist.artworks.map(a => elementForArtwork(a)))
   await fbapi.quickReply(context.fbSenderID, `About ${artistName}`, [
     { content_type: "text", title: "Favourite", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
     { content_type: "text", title: `About ${artistName}`, payload: `${ArtistShowKey}::${artistIDAndName}` },
     { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` },
     hasArticles ? { content_type: "text", title: "Related Articles", payload: `${ArtistArticlesKey}::${artistIDAndName}` } : null
   ])
-  await fbapi.stopTyping(context.fbSenderID)
 }
 
 // Deeper overview, more focused on the artist metadata specifically
@@ -57,12 +57,11 @@ async function callbackForShowingArtist(context: MitosisUser, payload: string) {
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artistQuery(artistID), context)
 
-  await fbapi.elementCarousel(context.fbSenderID, [elementForArtist(results.results.artist)])
+  await fbapi.elementCarousel(context.fbSenderID, [elementForArtist(results.data.artist)])
   await fbapi.quickReply(context.fbSenderID, `About ${artistName}`, [
     { content_type: "text", title: "Favourite", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
     { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` }
   ])
-  await fbapi.stopTyping(context.fbSenderID)
 }
 
 // Show a few Artworks in a carousel
@@ -74,7 +73,7 @@ async function callbackForArtistArtworks(context: MitosisUser, payload: string) 
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artistArtworksQuery(artistID, pageNumber), context)
 
-  await fbapi.elementCarousel(context.fbSenderID, results.results.artist.artworks.map(a => elementForArtwork(a)))
+  await fbapi.elementCarousel(context.fbSenderID, results.data.artist.artworks.map(a => elementForArtwork(a)))
   await fbapi.quickReply(context.fbSenderID, `More works from ${results.data.artist.name}`, [
     { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::${pageNumber + 1}` },
     { content_type: "text", title: `About ${artistName}`, payload: `${ArtistOverviewKey}::${artistIDAndName}` }
@@ -87,3 +86,19 @@ async function callbackForSavingArtist(context: MitosisUser, payload: string) {
   // await gravityPost({ artist_id: artistID }, "/api/v1/me/follow/artist", context)
   fbapi.sendTextMessage(context.fbSenderID, "Sorry - Artsy login isn't working yet")
 }
+
+// Shows related articles to an artist
+async function callbackForArticles(context: MitosisUser, payload: string) {
+  const [, artistID, artistName] = payload.split("::")
+  const artistIDAndName = artistID + "::" + artistName
+
+  fbapi.startTyping(context.fbSenderID)
+  const results = await metaphysicsQuery(artistArticlesQuery(artistID), context)
+  await fbapi.elementCarousel(context.fbSenderID, results.data.artist.articles.map(a => elementForArticle(a)))
+
+  await fbapi.quickReply(context.fbSenderID, `More about ${artistName}`, [
+    { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` },
+    { content_type: "text", title: `About ${artistName}`, payload: `${ArtistOverviewKey}::${artistIDAndName}` }
+  ])
+}
+

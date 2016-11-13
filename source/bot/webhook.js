@@ -7,6 +7,7 @@ import { exampleFallbacks } from "./facebook_examples"
 import { handlePostbacks } from "./postback-manager"
 import type { MitosisUser } from "./types"
 import { getOrCreateMitosisUser } from "../db/mongo"
+import { handleUnknownMessage } from "./message-parser"
 
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
@@ -94,21 +95,9 @@ async function receivedMessage(event: any) {
   }
 
   if (messageText) {
-    switch (messageText) {
-      case "random artwork":
-        break
-
-      case "random artist":
-        break
-
-      case "random article":
-        break
-
-      case "settings":
-        break
-
-      default:
-        exampleFallbacks(senderID, messageText)
+    if (handleUnknownMessage(context, message, metadata) === false) {
+      // This is Facebook's example responses, keeping around demoing
+      exampleFallbacks(senderID, messageText)
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received")

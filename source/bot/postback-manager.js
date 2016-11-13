@@ -2,6 +2,7 @@
 
 import { handleArtworkCallbacks } from "./contexts/artwork"
 import { handleArtistCallbacks } from "./contexts/artist"
+import { handleSerendipityCallbacks } from "./contexts/serendipity"
 
 import type { MitosisUser } from "./types"
 
@@ -14,4 +15,5 @@ import type { MitosisUser } from "./types"
 export function handlePostbacks(context: MitosisUser, payload: string) {
   handleArtistCallbacks(context, payload)
   handleArtworkCallbacks(context, payload)
+  handleSerendipityCallbacks(context, payload)
 }
