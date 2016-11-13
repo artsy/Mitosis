@@ -1,6 +1,6 @@
 // @flow
 
-import { ArtistFavouriteKey } from "../artist"
+import { ArtistFavouriteKey, ArtistOverviewKey } from "../artist"
 import type { GenericElement } from "../../../facebook/types"
 import { WEB_URL } from "../../../globals"
 
@@ -10,15 +10,25 @@ export function elementForArtist(artist: any): GenericElement {
     title: artist.name,
     subtitle: artist.blurb,
     item_url: url,
-    image_url: artist.images[0].url,
+    image_url: artist.image.url,
     buttons: [{
-      type: "web_url",
-      url: url,
-      title: "Open on Artsy"
+      type: "postback",
+      title: "Show More Info",
+      payload: `${ArtistOverviewKey}::${artist.id}::${artist.name}`
     }, {
       type: "postback",
       title: "Follow",
-      payload: `${ArtistFavouriteKey}::${artist.id}::${artist.title}`
+      payload: `${ArtistFavouriteKey}::${artist.id}::${artist.name}`
     }]
   }
 }
+
+export const elementArtistEssentialsGraphQL = `
+id
+name
+blurb
+href
+image {
+  url
+}
+`

@@ -95,7 +95,7 @@ async function receivedMessage(event: any) {
   }
 
   if (messageText) {
-    if (handleUnknownMessage(context, message, metadata) === false) {
+    if (handleUnknownMessage(context, messageText, metadata) === false) {
       // This is Facebook's example responses, keeping around demoing
       exampleFallbacks(senderID, messageText)
     }

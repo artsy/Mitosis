@@ -1,5 +1,8 @@
 // @flow
 
+import { elementArtistEssentialsGraphQL } from "./element"
+import { elementArticleEssentialsGraphQL } from "../article/element"
+
 export const artistArtworksQuery = (artistID: string, page: number) => `
 {
   artist(id:"${artistID}") {
@@ -9,6 +12,7 @@ export const artistArtworksQuery = (artistID: string, page: number) => `
       id
       title
       description
+      href
       images {
         url
       }
@@ -20,11 +24,8 @@ export const artistArtworksQuery = (artistID: string, page: number) => `
 export const artistQuery = (artistID: string) => `
 {
   artist(id:"${artistID}") {
-    id
-    blurb
-    image {
-      url(version: "square")
-    }
+    ${elementArtistEssentialsGraphQL}
+    
     shows(active: true) {
       id
       is_displayable
@@ -34,16 +35,13 @@ export const artistQuery = (artistID: string) => `
       id
       title
       description
+      href
       images {
         url
       }
     }
-    articles {
-      title,
-      href
-      thumbnail_image {
-        url
-      }
+    articles(limit: 1) {
+      ${elementArticleEssentialsGraphQL}
     }
     artists {
       name
@@ -57,12 +55,8 @@ export const artistArticlesQuery = (artistID: string) => `
   artist(id:"${artistID}") {
     id
     name
-    articles {
-      title,
-      href
-      thumbnail_image {
-        url
-      }
+    articles(limit: 10) {
+      ${elementArticleEssentialsGraphQL}
     }
   }
 }

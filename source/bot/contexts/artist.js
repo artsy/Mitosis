@@ -42,9 +42,9 @@ async function callbackForArtistOverview(context: MitosisUser, payload: string) 
 
   await fbapi.elementCarousel(context.fbSenderID, results.data.artist.artworks.map(a => elementForArtwork(a)))
   await fbapi.quickReply(context.fbSenderID, `About ${artistName}`, [
-    { content_type: "text", title: "Favourite", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
-    { content_type: "text", title: `About ${artistName}`, payload: `${ArtistShowKey}::${artistIDAndName}` },
-    { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` },
+    { content_type: "text", title: "Favourite Artist", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
+    { content_type: "text", title: `More About ${artistName}`, payload: `${ArtistShowKey}::${artistIDAndName}` },
+    { content_type: "text", title: "Show More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` },
     hasArticles ? { content_type: "text", title: "Related Articles", payload: `${ArtistArticlesKey}::${artistIDAndName}` } : null
   ])
 }
@@ -101,4 +101,3 @@ async function callbackForArticles(context: MitosisUser, payload: string) {
     { content_type: "text", title: `About ${artistName}`, payload: `${ArtistOverviewKey}::${artistIDAndName}` }
   ])
 }
-

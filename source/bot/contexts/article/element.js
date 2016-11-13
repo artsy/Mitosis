@@ -6,8 +6,7 @@ import { WEB_URL } from "../../../globals"
 export function elementForArticle(article: any): GenericElement {
   const url = WEB_URL + article.href
   return {
-    title: article.name,
-    subtitle: article.thumbnail_teaser,
+    title: article.thumbnail_title,
     item_url: url,
     image_url: article.thumbnail_image.url,
     buttons: [{
@@ -17,3 +16,12 @@ export function elementForArticle(article: any): GenericElement {
     }]
   }
 }
+
+export const elementArticleEssentialsGraphQL = `
+href
+thumbnail_title
+href
+thumbnail_image {
+  url
+}
+`

@@ -7,7 +7,7 @@ import type { QuickReply, GenericElement, FBButton } from "./types"
 export const fbapi = {
   /**
    * Present a collection of small tappable actions, with a message body beforehand.
-   * Feel free to send nulls in the array, they will be filtered
+   * Feel free to send nulls in the array, they will be filtered. Title cannot be empty.
    *
    * @export
    * @param {string} recipientId ID of person to send data to
@@ -16,13 +16,17 @@ export const fbapi = {
    * @returns {Promise<any>} The JSON response if everything is all good
    */
   quickReply(recipientId: string, title: string, replies: Array<?QuickReply>) {
+    if (title.length === 0) {
+      console.error("Empty string sent to quickReply")
+      return {}
+    }
     return api({
       recipient: {
         id: recipientId
       },
       message: {
-        text: title.slice(0, 30),
-        quick_replies: replies.filter((a) => a !== null)
+        text: title.slice(0, 20),
+        quick_replies: replies.filter((r) => r !== null).map((r) => sanitiseQuickReply(r))
       }
     })
   },
@@ -71,7 +75,7 @@ export const fbapi = {
           type: "template",
           payload: {
             template_type: "generic",
-            elements: elements.map((e) => sanitiseElement(e))
+            elements: elements.slice(0, 10).map((e) => sanitiseElement(e))
           }
         }
       }
@@ -79,6 +83,10 @@ export const fbapi = {
   },
 
   sendTextMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT") {
+    if (messageText.length === 0) {
+      console.error("Empty string sent to messageText")
+      return {}
+    }
     return api({
       recipient: {
         id: recipientId
@@ -94,6 +102,15 @@ export const fbapi = {
 // NOTE:
 // The FB API doesn't crop texts being sent to it, so we'll do it before sending anything up
 // meaning the app itself doesn't care about implementation details like that.
+
+function sanitiseQuickReply(reply: QuickReply): QuickReply {
+  var safeReply: QuickReply = {
+    title: reply.title.slice(0, 19),
+    content_type: reply.content_type,
+    payload: reply.payload
+  }
+  return safeReply
+}
 
 /**
  * Converts a button into one that won't fail the network request
@@ -119,12 +136,12 @@ function sanitiseButton(button: FBButton): FBButton {
  */
 function sanitiseElement(element: GenericElement): GenericElement {
   var safeElement: GenericElement = {
-    title: element.title.slice(0, 30),
-    subtitle: element.subtitle.slice(0, 300),
+    title: element.title.slice(0, 60),
     item_url: element.item_url,
     image_url: element.image_url
   }
-  if (element.buttons) { safeElement.buttons = element.buttons.map((e) => sanitiseButton(e)) }
+  if (element.subtitle) { safeElement.subtitle = element.subtitle.slice(0, 300) }
+  if (element.buttons) { safeElement.buttons = element.buttons.slice(0, 6).map((e) => sanitiseButton(e)) }
   return safeElement
 }
 

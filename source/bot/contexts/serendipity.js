@@ -4,6 +4,7 @@ import { fbapi } from "../../facebook/api"
 import type { MitosisUser } from "../types"
 import { metaphysicsQuery } from "../artsy-api"
 import { elementForArticle } from "./article/element"
+import { elementForArtist } from "./artist/element"
 import { trendingArtistsQuery, newArticlesQuery } from "./serendipity/queries"
 import { ArtistOverviewKey } from "./artist"
 // Keys for callback resolution
@@ -29,9 +30,19 @@ async function callbackTrendingArtists(context: MitosisUser, payload: string) {
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(trendingArtistsQuery(), context)
   const artists = results.data.trending_artists.artists
-  await fbapi.quickReply(context.fbSenderID, "Trending Artists on Artsy", artists.map((a) => {
-    return { content_type: "text", title: a.name, payload: `${ArtistOverviewKey}::${a.id}::${a.name}` }
-  }))
+  if (artists.length) {
+    await fbapi.elementCarousel(context.fbSenderID, artists.map((a) => elementForArtist(a)))
+    // await fbapi.quickReply(context.fbSenderID, "Trending Artists on Artsy", artists.map((a) => {
+    //   return { content_type: "text", title: a.name, payload: `${ArtistOverviewKey}::${a.id}::${a.name}` }
+    // }))
+  } else {
+    fbapi.quickReply(context.fbSenderID, "No Artists Found, here's some favourites", [
+      { content_type: "text", title: "Adam Miller", payload: `${ArtistOverviewKey}::adam-miller::Adam Miller` },
+      { content_type: "text", title: "Michael Kenner", payload: `${ArtistOverviewKey}::michael-kenner::Michael Kenner` },
+      { content_type: "text", title: "Daniel Ludwig", payload: `${ArtistOverviewKey}::daniel-ludwig::Daniel Ludwig` },
+      { content_type: "text", title: "Sol Lewitt", payload: `${ArtistOverviewKey}::sol-letwitt::Sol Lewitt` }
+    ])
+  }
 }
 
 // Shows new articles

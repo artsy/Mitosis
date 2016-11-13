@@ -17,6 +17,7 @@ import type { MitosisUser } from "./types"
 export function handleUnknownMessage(context: MitosisUser, message: string, payload: string): boolean {
   // handleArtistCallbacks(context, payload)
   // handleArtworkCallbacks(context, payload)
+  console.log(`Recieved message: ${message}`)
 
   if (message === "help") {
     fbapi.sendTextMessage(context.fbSenderID, "Try saying, 'trending artists' or 'new articles' then dig around.")

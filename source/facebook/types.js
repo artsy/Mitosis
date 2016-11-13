@@ -17,7 +17,7 @@ export interface FBButton {
 
 export interface GenericElement {
   title: string,
-  subtitle: string,
+  subtitle?: string,
   item_url: string,
   image_url: string,
   buttons?: Array<FBButton>
