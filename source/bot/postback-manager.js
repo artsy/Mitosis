@@ -1,6 +1,8 @@
 // @flow
 
-import { callbackForFavouritingArtwork } from "./contexts/artworks"
+import { handleArtworkCallbacks } from "./contexts/artwork"
+import { handleArtistCallbacks } from "./contexts/artist"
+
 import type { MitosisUser } from "./types"
 
 /**
@@ -10,7 +12,6 @@ import type { MitosisUser } from "./types"
  * @param {string} payload
  */
 export function handlePostbacks(context: MitosisUser, payload: string) {
-  if (payload.startsWith("artwork_favourite::")) {
-    callbackForFavouritingArtwork(context, payload)
-  }
+  handleArtistCallbacks(context, payload)
+  handleArtworkCallbacks(context, payload)
 }

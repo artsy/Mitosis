@@ -2,11 +2,12 @@
 
 import fetch from "node-fetch"
 import { PAGE_ACCESS_TOKEN } from "../globals"
-import type { QuickReply, GenericElement } from "./types"
+import type { QuickReply, GenericElement, FBButton } from "./types"
 
 export const fbapi = {
   /**
-   * Present a collection of small tappable actions, with a message body beforehand
+   * Present a collection of small tappable actions, with a message body beforehand.
+   * Feel free to send nulls in the array, they will be filtered
    *
    * @export
    * @param {string} recipientId ID of person to send data to
@@ -14,14 +15,14 @@ export const fbapi = {
    * @param {QuickReply[]} replies Array of replies
    * @returns {Promise<any>} The JSON response if everything is all good
    */
-  quickReply(recipientId: string, title: string, replies: QuickReply[]) {
+  quickReply(recipientId: string, title: string, replies: Array<?QuickReply>) {
     return api({
       recipient: {
         id: recipientId
       },
       message: {
-        text: title,
-        quick_replies: replies
+        text: title.slice(0, 30),
+        quick_replies: replies.filter((a) => a !== null)
       }
     })
   },
@@ -70,12 +71,61 @@ export const fbapi = {
           type: "template",
           payload: {
             template_type: "generic",
-            elements: elements
+            elements: elements.map((e) => sanitiseElement(e))
           }
         }
       }
     })
+  },
+
+  sendTextMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT") {
+    return api({
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: messageText.slice(0, 300),
+        metadata: metadata
+      }
+    })
   }
+}
+
+// NOTE:
+// The FB API doesn't crop texts being sent to it, so we'll do it before sending anything up
+// meaning the app itself doesn't care about implementation details like that.
+
+/**
+ * Converts a button into one that won't fail the network request
+ *
+ * @param {FBButton} button
+ * @returns {FBButton} safe version of the button
+ */
+function sanitiseButton(button: FBButton): FBButton {
+  var safeButton: FBButton = {
+    type: button.type,
+    title: button.title.slice(0, 30)
+  }
+  if (button.url) { safeButton.url = button.url }
+  if (button.payload) { safeButton.payload = button.payload.slice(0, 300) }
+  return safeButton
+}
+
+/**
+ * Converts a GenericElement into a safe version for the API
+ *
+ * @param {GenericElement} element
+ * @returns {GenericElement} a afer version
+ */
+function sanitiseElement(element: GenericElement): GenericElement {
+  var safeElement: GenericElement = {
+    title: element.title.slice(0, 30),
+    subtitle: element.subtitle.slice(0, 300),
+    item_url: element.item_url,
+    image_url: element.image_url
+  }
+  if (element.buttons) { safeElement.buttons = element.buttons.map((e) => sanitiseButton(e)) }
+  return safeElement
 }
 
 // TODO, migrate this function away from being exposed

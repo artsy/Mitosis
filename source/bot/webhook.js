@@ -4,12 +4,9 @@ import type { $Request, $Response } from "express"
 import { api } from "../facebook/api"
 import { receivedAuthentication } from "./user-setup"
 import { exampleFallbacks } from "./facebook_examples"
-import { artsyArtworks } from "./contexts/artworks"
 import { handlePostbacks } from "./postback-manager"
 import type { MitosisUser } from "./types"
 import { getOrCreateMitosisUser } from "../db/mongo"
-
-import { callbackForShowingArtist } from "./contexts/artist"
 
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
@@ -98,12 +95,16 @@ async function receivedMessage(event: any) {
 
   if (messageText) {
     switch (messageText) {
-      case "artwork":
-        artsyArtworks(senderID)
+      case "random artwork":
         break
 
-      case "artist":
-        callbackForShowingArtist(context, "artit::banksy::Banksy")
+      case "random artist":
+        break
+
+      case "random article":
+        break
+
+      case "settings":
         break
 
       default:
@@ -213,7 +214,7 @@ function receivedAccountLink(event: any) {
 }
 
 /*
- * Send a text message using the Send API.
+ * Send a text message using the Send API. Deprecated in favour of the fbapi's version'
  *
  */
 export function sendTextMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT"): Promise<any> {

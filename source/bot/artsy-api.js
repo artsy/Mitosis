@@ -59,7 +59,6 @@ export function metaphysicsQuery(query: GraphQLQuery, user: MitosisUser): Promis
  * @returns {Promise<any>}
  */
 export function gravityPost(body: any = {}, path: string, user: MitosisUser): Promise<any> {
-  // TODO: Get token
   return fetch(`${GRAVITY_URL}${path}`, {
     method: "POST",
     body: JSON.stringify(body),
