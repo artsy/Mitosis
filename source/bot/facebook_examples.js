@@ -1,7 +1,6 @@
 // @flow
 
 import { api } from "../facebook/api"
-import { sendTextMessage } from "./webhook"
 import { BOT_SERVER_URL } from "../globals"
 
 // If we receive a text message, check to see if it matches any special

@@ -65,7 +65,9 @@ export const fbapi = {
  * @param {string} recipientId
  * @param {GenericElement} elements
  */
-  elementCarousel(recipientId: string, elements: GenericElement[]) {
+  async elementCarousel(recipientId: string, title: string, elements: GenericElement[]) {
+    await this.sendTextMessage(title)
+
     return api({
       recipient: {
         id: recipientId
@@ -107,7 +109,7 @@ function sanitiseQuickReply(reply: QuickReply): QuickReply {
   var safeReply: QuickReply = {
     title: reply.title.slice(0, 19),
     content_type: reply.content_type,
-    payload: reply.payload
+    payload: reply.payload || ""
   }
   return safeReply
 }
