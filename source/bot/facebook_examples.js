@@ -61,9 +61,6 @@ export function exampleFallbacks(senderID: string, messageText: string) {
     case "account linking":
       sendAccountLinking(senderID)
       break
-
-    default:
-      sendTextMessage(senderID, messageText)
   }
 }
 

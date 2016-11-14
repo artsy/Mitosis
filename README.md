@@ -20,6 +20,10 @@ The app splits into a few sections: `bot`, `db` and `facebook`. The [bot](source
 
 You need to have Orta add your Facebook account to the testers page ([link](https://developers.facebook.com/apps/1084256578353668/roles/)). Then go to the [heroku page](https://orta-artsy-facebook-bot.herokuapp.com) and click "Message Us".
 
+The easiest way to start is to say "trending artists", then start interacting via the buttons that are provided.
+
+If you want to see all off the potential elements we can use, say any of: `"gif", "audio", "video", "image", "file", "button", "generic", "receipt", "quick reply", "read receipt", "typing on", "typing off", "account linking"`. 
+
 ### Read More
 
 * [Messenger API docs](https://developers.facebook.com/docs/messenger-platform)
