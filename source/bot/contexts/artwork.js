@@ -36,7 +36,8 @@ async function callbackForFavouritingArtwork(context: MitosisUser, payload: stri
 
   // Save it
   fbapi.startTyping(context.fbSenderID)
-  await gravityPost({ user_id: context.artsyUserID }, `/api/v1/collection/saved-artwork/artwork/${artworkID}`, context)
+  // await gravityPost({ user_id: context.artsyUserID }, `/api/v1/collection/saved-artwork/artwork/${artworkID}`, context)
+  await fbapi.sendTextMessage(context.fbSenderID, "Sorry - Artsy login isn't working yet")
 
   // Offer some jump-off places
   const result = await metaphysicsQuery(artworkQuery(artworkID), context)
