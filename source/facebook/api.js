@@ -20,13 +20,15 @@ export const fbapi = {
       console.error("Empty string sent to quickReply")
       return {}
     }
+    // Break the types so that we can go from `?QuickReply` to `QuickReply`
+    const onlyReplies:any[] = replies.filter((r) => r !== null)
     return api({
       recipient: {
         id: recipientId
       },
       message: {
         text: title.slice(0, 20),
-        quick_replies: replies.filter((r) => r !== null).map((r) => sanitiseQuickReply(r))
+        quick_replies: onlyReplies.map((r) => sanitiseQuickReply(r))
       }
     })
   },
@@ -66,7 +68,7 @@ export const fbapi = {
  * @param {GenericElement} elements
  */
   async elementCarousel(recipientId: string, title: string, elements: GenericElement[]) {
-    await this.sendTextMessage(title)
+    await this.sendTextMessage(recipientId, "> " + title)
 
     return api({
       recipient: {
@@ -84,8 +86,30 @@ export const fbapi = {
     })
   },
 
+  /**
+   * Sends a message chopped up into 320 characters
+   *
+   * @param {string} recipientId
+   * @param {string} messageText
+   * @param {string} [metadata="NO_CONTEXT"]
+   */
+  async sendLongMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT") {
+    const messages = messageText.match(/.{1,319}/g)
+    if (messages) {
+      for (const message of messages) {
+        await this.sendTextMessage(recipientId, message, metadata)
+      }
+    }
+  },
+  /**
+   * Sends a text message
+   *
+   * @param {string} recipientId
+   * @param {string} messageText
+   * @param {string} [metadata="NO_CONTEXT"]
+   */
   sendTextMessage(recipientId: string, messageText: string, metadata: string = "NO_CONTEXT") {
-    if (messageText.length === 0) {
+    if (messageText === undefined || messageText.length === 0) {
       console.error("Empty string sent to messageText")
       return {}
     }
@@ -94,7 +118,7 @@ export const fbapi = {
         id: recipientId
       },
       message: {
-        text: messageText.slice(0, 300),
+        text: messageText.slice(0, 319),
         metadata: metadata
       }
     })

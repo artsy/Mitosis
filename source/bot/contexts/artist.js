@@ -56,9 +56,16 @@ async function callbackForShowingArtist(context: MitosisUser, payload: string) {
 
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artistQuery(artistID), context)
+  const artist = results.data.artist
+  fbapi.sendLongMessage(context.fbSenderID, `
+> ${artist.name}
+${artist.formatted_nationality_and_birthday}
+${artist.formatted_artworks_count}
 
-  await fbapi.elementCarousel(context.fbSenderID, `More Info for ${artistName}`, [elementForArtist(results.data.artist)])
-  await fbapi.quickReply(context.fbSenderID, `About ${artistName}`, [
+${artist.bio}
+
+${artist.blurb || ""}`)
+  await fbapi.quickReply(context.fbSenderID, `${artistName}`, [
     { content_type: "text", title: "Favourite", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
     { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` }
   ])
@@ -94,7 +101,7 @@ async function callbackForArticles(context: MitosisUser, payload: string) {
 
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artistArticlesQuery(artistID), context)
-  await fbapi.elementCarousel(context.fbSenderID, `Articles for ${artistName}`, results.data.artist.articles.map(a => elementForArticle(a)))
+  await fbapi.elementCarousel(context.fbSenderID, `Articles about ${artistName}`, results.data.artist.articles.map(a => elementForArticle(a)))
 
   await fbapi.quickReply(context.fbSenderID, `More about ${artistName}`, [
     { content_type: "text", title: "More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` },
