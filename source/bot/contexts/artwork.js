@@ -2,7 +2,7 @@
 
 import { fbapi } from "../../facebook/api"
 import type { MitosisUser } from "../types"
-import { metaphysicsQuery, gravityPost } from "../artsy-api"
+import { metaphysicsQuery } from "../artsy-api"
 import { elementForArtwork } from "./artwork/element"
 import { elementForArticle } from "./article/element"
 import { artworkQuery, artworkRelatedArticlesQuery, artworkRelatedArtworksQuery } from "./artwork/queries"
@@ -65,7 +65,7 @@ async function callbackForArtworkOverview(context: MitosisUser, payload: string)
   const hasRelatedArticles = artwork.related.length > 0
 
   // Show the Artist image + link
-  await fbapi.elementCarousel(context.fbSenderID, [elementForArtwork(artwork)])
+  await fbapi.elementCarousel(context.fbSenderID, `About Artwork ${artwork.title}`, [elementForArtwork(artwork)])
 
   // Try show some useful info about the work, or the artist
   if (artwork.description !== null) {
@@ -85,19 +85,19 @@ async function callbackForArtworkOverview(context: MitosisUser, payload: string)
 
 // Shows artworks related to an Artwork
 async function callbackForArtworkRelatedArtworks(context: MitosisUser, payload: string): ?Promise<void> {
-  const [, artworkID] = payload.split("::")
+  const [, artworkID, artworkName] = payload.split("::")
 
   const result = await metaphysicsQuery(artworkRelatedArtworksQuery(artworkID), context)
   const artworks = result.data.artwork.related
 
-  await fbapi.elementCarousel(context.fbSenderID, artworks.map((a) => elementForArtwork(a)))
+  await fbapi.elementCarousel(context.fbSenderID, `Artworks Related to ${artworkName}`, artworks.map((a) => elementForArtwork(a)))
 }
 
 // Shows related articles to an artist
 async function callbackForArtworkRelatedArticles(context: MitosisUser, payload: string) {
-  const [, artworkID] = payload.split("::")
+  const [, artworkID, artworkName] = payload.split("::")
 
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artworkRelatedArticlesQuery(artworkID), context)
-  await fbapi.elementCarousel(context.fbSenderID, results.data.artwork.articles.map(a => elementForArticle(a)))
+  await fbapi.elementCarousel(context.fbSenderID, `Articles Related to ${artworkName}`, results.data.artwork.articles.map(a => elementForArticle(a)))
 }
