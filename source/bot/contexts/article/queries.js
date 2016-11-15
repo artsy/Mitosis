@@ -6,6 +6,7 @@
 {
   articles(sort: PUBLISHED_AT_DESC, published:true) {
     ${elementArticleEssentialsGraphQL}
+    published_at
   }
 }
 `

@@ -3,6 +3,10 @@
 require("../globals")
 require("../db/mongo")
 
+import { elementForArticle } from "../bot/contexts/article/element"
+import { newArticlesQuery } from "../bot/contexts/article/queries"
+
+import { metaphysicsQuery } from "../bot/artsy-api"
 import { fbapi } from "../facebook/api"
 import { findAllUsersWithGMTHour } from "../db/mongo"
 
@@ -25,10 +29,23 @@ console.log(`Handling anyone at GMT ${hourWeCareAbout}`)
 
 const sendUpdates = async (hour: number) => {
   const users = await findAllUsersWithGMTHour(hourWeCareAbout)
+
   console.log(`Sending notifications to ${users.length} people`)
+  if (users.length === 0) { process.exit() }
+
+  const firstUser = users[0]
+  const results = await metaphysicsQuery(newArticlesQuery(), firstUser)
+
+  const millisecondsPerDay = 1000 * 60 * 60 * 24
+  const cutOffFilter = millisecondsPerDay * 1
+
+  const yesterdaysArticles = results.data.articles.filter((a) => {
+    return (Date.now() - Date.parse(a.published_at)) > cutOffFilter
+  })
 
   for (const user of users) {
-    await fbapi.sendTextMessage(user.fbSenderID, "Hello there! here's your daily thing", "bidaily-reminder")
+    const message = `Hey there ${user.firstName}`
+    await fbapi.elementCarousel(user.fbSenderID, message, yesterdaysArticles.map(a => elementForArticle(a)))
   }
 
   process.exit()
