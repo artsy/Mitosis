@@ -1,6 +1,6 @@
 // @flow
 
-import { sendTextMessage } from "./webhook"
+import { fbapi } from "../facebook/api"
 
 /**
  * Authorization Event
@@ -28,5 +28,5 @@ export function receivedAuthentication(event: any) {
 
   // When an authentication is received, we'll send a message back to the sender
   // to let them know it was successful.
-  sendTextMessage(senderID, "Authentication successful")
+  fbapi.sendTextMessage(senderID, "Welcome! To get started, try saying replying with either 'trending artists' or 'new articles'")
 }

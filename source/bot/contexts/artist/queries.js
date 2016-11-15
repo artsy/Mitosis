@@ -25,11 +25,15 @@ export const artistQuery = (artistID: string) => `
 {
   artist(id:"${artistID}") {
     ${elementArtistEssentialsGraphQL}
-    
+    bio
+    blurb
+    formatted_nationality_and_birthday
+    formatted_artworks_count
     shows(active: true) {
       id
       is_displayable
       is_active
+      name
     }
     artworks(size: 5, sort: iconicity_desc, published: true) {
       id
