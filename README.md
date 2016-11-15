@@ -29,6 +29,23 @@ If you want to see all off the potential elements we can use, say any of: `"gif"
 * [Messenger API docs](https://developers.facebook.com/docs/messenger-platform)
 * [Messenget Platform Guidelines](https://developers.facebook.com/docs/messenger-platform/guidelines)
 
+### What is the focus?
+
+* Providing another way to subscribe to Artsy Articles
+* Offer a way to dive into some of our data
+
+### Setting up for Dev
+
+Clone the repo, run `yarn install`
+
+```sh
+git clone https://github.com/artsy/Mitosis.git
+cd mitosis
+yarn install
+```
+
+This is still a bit rough around the edges for contributors. As you cannot easily use the Facebook API to send you webhook notifications to you. However, to run a copy of the server, create a copy of `config.default.json.example` and make it `config.default`.   
+
 ### TODO:
 
 * Allow you to connect to your Artsy account
