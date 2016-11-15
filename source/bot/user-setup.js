@@ -10,7 +10,7 @@ import { fbapi } from "../facebook/api"
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
  *
  */
-export function receivedAuthentication(event: any) {
+export async function receivedAuthentication(event: any) {
   var senderID = event.sender.id
   var recipientID = event.recipient.id
   var timeOfAuth = event.timestamp
@@ -26,7 +26,9 @@ export function receivedAuthentication(event: any) {
     "through param '%s' at %d", senderID, recipientID, passThroughParam,
     timeOfAuth)
 
+  const details = await fbapi.getFBUserDetails(senderID)
+
   // When an authentication is received, we'll send a message back to the sender
   // to let them know it was successful.
-  fbapi.sendTextMessage(senderID, "Welcome! To get started, try saying replying with either 'trending artists' or 'new articles'")
+  fbapi.sendTextMessage(senderID, `Welcome ${details.first_name} to the Artsy bot. To get started, try saying replying with either 'trending artists' or 'new articles'`)
 }

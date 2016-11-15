@@ -3,7 +3,6 @@
 import { fbapi } from "../../facebook/api"
 import { metaphysicsQuery } from "../artsy-api"
 import { elementForArtwork } from "./artwork/element"
-import { elementForArtist } from "./artist/element"
 import { elementForArticle } from "./article/element"
 import type { MitosisUser } from "../types"
 import { artistArtworksQuery, artistQuery, artistArticlesQuery } from "./artist/queries"
@@ -41,7 +40,8 @@ async function callbackForArtistOverview(context: MitosisUser, payload: string) 
   const hasArticles = results.data.artist.articles.length > 0
 
   await fbapi.elementCarousel(context.fbSenderID, `Artworks for ${artistName}`, results.data.artist.artworks.map(a => elementForArtwork(a)))
-  await fbapi.quickReply(context.fbSenderID, `About ${artistName}`, [
+
+  await fbapi.quickReply(context.fbSenderID, `What else do you know about ${artistName}`, [
     { content_type: "text", title: "Favourite Artist", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
     { content_type: "text", title: `More About ${artistName}`, payload: `${ArtistShowKey}::${artistIDAndName}` },
     { content_type: "text", title: "Show More Artworks", payload: `${ArtistShowArtworksKey}::${artistIDAndName}::2` },

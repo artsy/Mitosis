@@ -5,7 +5,6 @@ import { api } from "../facebook/api"
 import { receivedAuthentication } from "./user-setup"
 import { exampleFallbacks } from "./facebook_examples"
 import { handlePostbacks } from "./postback-manager"
-import type { MitosisUser } from "./types"
 import { getOrCreateMitosisUser } from "../db/mongo"
 import { handleUnknownMessage } from "./message-parser"
 
@@ -136,7 +135,7 @@ function receivedDeliveryConfirmation(event: any) {
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received
  *
  */
-function receivedPostback(event: any) {
+async function receivedPostback(event: any) {
   var senderID = event.sender.id
   var recipientID = event.recipient.id
   var timeOfPostback = event.timestamp
@@ -148,13 +147,7 @@ function receivedPostback(event: any) {
   console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback)
 
-  const context: MitosisUser = {
-    fbSenderID: senderID,
-    artsyUserID: "null",
-    userToken: "thingy",
-    xappToken: "ok"
-  }
-
+  const context = await getOrCreateMitosisUser(senderID)
   handlePostbacks(context, payload)
 }
 

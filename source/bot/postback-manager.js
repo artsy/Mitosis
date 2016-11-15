@@ -3,6 +3,7 @@
 import { handleArtworkCallbacks } from "./contexts/artwork"
 import { handleArtistCallbacks } from "./contexts/artist"
 import { handleSerendipityCallbacks } from "./contexts/serendipity"
+import { handleSettingsCallbacks } from "./contexts/settings"
 
 import type { MitosisUser } from "./types"
 
@@ -16,4 +17,5 @@ export function handlePostbacks(context: MitosisUser, payload: string) {
   handleArtistCallbacks(context, payload)
   handleArtworkCallbacks(context, payload)
   handleSerendipityCallbacks(context, payload)
+  handleSettingsCallbacks(context, payload)
 }

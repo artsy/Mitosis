@@ -6,7 +6,8 @@
     "start": "babel-watch --watch views source/mitosis.js",
     "lint": "jshint --exclude node_modules .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "babel source --out-dir distribution --source-maps"
+    "postinstall": "babel source --out-dir distribution --source-maps",
+    "hourly": "babel-node source/scripts/hourly.js"
   },
   "repository": {
     "type": "git",
@@ -29,9 +30,7 @@
     "express": "^4.13.4",
     "mongodb": "^2.2.11",
     "mongojs": "^2.4.0",
-    "node-fetch": "^1.6.3",
-    "pg": "^6.1.0",
-    "pg-then": "^1.2.1"
+    "node-fetch": "^1.6.3"
   },
   "engines": {
     "node": "7.1.0"

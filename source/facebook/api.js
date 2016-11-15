@@ -15,11 +15,7 @@ export const fbapi = {
    * @param {QuickReply[]} replies Array of replies
    * @returns {Promise<any>} The JSON response if everything is all good
    */
-  quickReply(recipientId: string, title: string, replies: Array<?QuickReply>) {
-    if (title.length === 0) {
-      console.error("Empty string sent to quickReply")
-      return {}
-    }
+  quickReply(recipientId: string, title: ?string, replies: Array<?QuickReply>) {
     // Break the types so that we can go from `?QuickReply` to `QuickReply`
     const onlyReplies:any[] = replies.filter((r) => r !== null)
     return api({
@@ -27,7 +23,7 @@ export const fbapi = {
         id: recipientId
       },
       message: {
-        text: title.slice(0, 20),
+        text: (title && title.length > 0) ? title.slice(0, 319) : null,
         quick_replies: onlyReplies.map((r) => sanitiseQuickReply(r))
       }
     })
@@ -122,6 +118,18 @@ export const fbapi = {
         metadata: metadata
       }
     })
+  },
+
+  /**
+   * Gets the user details for a Facebook, note this is intentionally restricted to details we can see
+   * https://developers.facebook.com/docs/messenger-platform/user-profile
+   *
+   * @param {string} recipientId user
+   */
+  async getFBUserDetails(recipientId: string) {
+    const fields = "first_name,timezone"
+    const url = `https://graph.facebook.com/v2.6/${recipientId}?fields=${fields}&access_token=${PAGE_ACCESS_TOKEN}`
+    return fetch(url, {method: "GET"}).then(checkStatus).then(parseJSON)
   }
 }
 
@@ -150,7 +158,7 @@ function sanitiseButton(button: FBButton): FBButton {
     title: button.title.slice(0, 30)
   }
   if (button.url) { safeButton.url = button.url }
-  if (button.payload) { safeButton.payload = button.payload.slice(0, 300) }
+  if (button.payload) { safeButton.payload = button.payload.slice(0, 319) }
   return safeButton
 }
 
@@ -166,7 +174,7 @@ function sanitiseElement(element: GenericElement): GenericElement {
     item_url: element.item_url,
     image_url: element.image_url
   }
-  if (element.subtitle) { safeElement.subtitle = element.subtitle.slice(0, 300) }
+  if (element.subtitle) { safeElement.subtitle = element.subtitle.slice(0, 319) }
   if (element.buttons) { safeElement.buttons = element.buttons.slice(0, 6).map((e) => sanitiseButton(e)) }
   return safeElement
 }

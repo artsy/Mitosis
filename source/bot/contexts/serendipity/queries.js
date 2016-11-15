@@ -2,7 +2,7 @@
 import { elementArtistEssentialsGraphQL } from "../artist/element"
 
 export const trendingArtistsQuery = () => {
-  const sorts = ["ARTIST_FOLLOW", "ARTIST_INQUIRY", "ARTIST_SEARCH", "ARTIST_SAVE", "ARTIST_FAIR", "ARTIST_AUCTION_LOT"]
+  const sorts = ["ARTIST_SEARCH", "ARTIST_SAVE", "ARTIST_FAIR"]
   const randomIndex = Math.floor(Math.random() * sorts.length)
   return `
   {
@@ -15,15 +15,3 @@ export const trendingArtistsQuery = () => {
   `
 }
 
-export const newArticlesQuery = () => `
-{
-  articles(sort: PUBLISHED_AT_DESC, published:true) {
-    title
-    thumbnail_title
-    href
-    thumbnail_image {
-      url
-    }
-  }
-}
-`
