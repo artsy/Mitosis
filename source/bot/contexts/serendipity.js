@@ -5,8 +5,10 @@ import type { MitosisUser } from "../types"
 import { metaphysicsQuery } from "../artsy-api"
 import { elementForArticle } from "./article/element"
 import { elementForArtist } from "./artist/element"
-import { trendingArtistsQuery, newArticlesQuery } from "./serendipity/queries"
+import { trendingArtistsQuery } from "./serendipity/queries"
+import { newArticlesQuery } from "./article/queries"
 import { ArtistOverviewKey } from "./artist"
+
 // Keys for callback resolution
 
 export const SerendipityTrendingArtists = "serendipity-trending-artists"
@@ -31,12 +33,9 @@ async function callbackTrendingArtists(context: MitosisUser, payload: string) {
   const results = await metaphysicsQuery(trendingArtistsQuery(), context)
   const artists = results.data.trending_artists.artists
   if (artists.length) {
-    await fbapi.elementCarousel(context.fbSenderID, "Trending Artists", artists.map((a) => elementForArtist(a)))
-    // await fbapi.quickReply(context.fbSenderID, "Trending Artists on Artsy", artists.map((a) => {
-    //   return { content_type: "text", title: a.name, payload: `${ArtistOverviewKey}::${a.id}::${a.name}` }
-    // }))
+    fbapi.elementCarousel(context.fbSenderID, "Trending Artists", artists.map((a) => elementForArtist(a)))
   } else {
-    fbapi.quickReply(context.fbSenderID, "No Artists Found, here's some favourites", [
+    fbapi.quickReply(context.fbSenderID, "No Artists found, here's some of the bot author's favourites:", [
       { content_type: "text", title: "Adam Miller", payload: `${ArtistOverviewKey}::adam-miller::Adam Miller` },
       { content_type: "text", title: "Michael Kenner", payload: `${ArtistOverviewKey}::michael-kenner::Michael Kenner` },
       { content_type: "text", title: "Daniel Ludwig", payload: `${ArtistOverviewKey}::daniel-ludwig::Daniel Ludwig` },

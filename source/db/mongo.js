@@ -3,6 +3,8 @@
 const mongojs = require("mongojs")
 
 import { getXappToken } from "../bot/artsy-api"
+import { fbapi } from "../facebook/api"
+
 import type { MitosisUser } from "../bot/types"
 import { DB_URL } from "../globals"
 
@@ -15,7 +17,7 @@ const db = mongojs(`mongodb://${DB_URL}`, ["users"])
  * @returns {Promise<MitosisUser>} the User account representation in the db
  */
 
-export function getOrCreateMitosisUser(senderID: string): Promise<MitosisUser> {
+export async function getOrCreateMitosisUser(senderID: string): Promise<MitosisUser> {
   return new Promise((resolve: any, reject: any) => {
     // Check for existence
     db.users.findOne({ fbSenderID: senderID }, async (err, doc) => {
@@ -24,10 +26,20 @@ export function getOrCreateMitosisUser(senderID: string): Promise<MitosisUser> {
 
       // Make a new one if not
       const data = await getXappToken()
+      let fbData = { timezone: 1, first_name: "The Bot" }
+      try {
+      // Ensure that we have all the data we want from fb
+        fbData = await fbapi.getFBUserDetails(senderID)
+      } catch (e) {}
 
+      // Insert a new model
       const newUser: MitosisUser = {
         fbSenderID: senderID,
-        xappToken: data.xapp_token
+        xappToken: data.xapp_token,
+        subscribeToArticlesBiDaily: false,
+        timeForBiDailySub: 0,
+        timezoneOffset: fbData.timezone,
+        firstName: fbData.first_name
       }
       db.users.insert(newUser, (err, doc) => {
         if (err) { return reject(err) }
@@ -42,11 +54,25 @@ export function getOrCreateMitosisUser(senderID: string): Promise<MitosisUser> {
  *
  * @param {MitosisUser} user The user JSON to update in the db
  */
-
 export function updateMitosisUser(user: MitosisUser): Promise<MitosisUser> {
   return new Promise((resolve: any, reject: any) => {
-    db.mycollection.update({ fbSenderID: user.fbSenderID }, {$inc: user}, () => {
+    db.users.update({ fbSenderID: user.fbSenderID }, {$set: user}, () => {
       resolve(user)
+    })
+  })
+}
+
+/**
+ * Look for users with the right GMT settings for a notification
+ *
+ * @param {number} hour The hour you're looking for
+ */
+export function findAllUsersWithGMTHour(hour: number): Promise<MitosisUser[]> {
+  return new Promise((resolve: any, reject: any) => {
+    db.users.find({ subscribeToArticlesBiDaily: true, renderedGMTTimeForArticles: hour }, (err, docs) => {
+      console.log(docs)
+      if (err) { reject(err) }
+      else { resolve(docs) }
     })
   })
 }

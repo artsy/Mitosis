@@ -1,0 +1,12 @@
+{
+    "appSecret": "",
+    "pageAccessToken": "",
+    "validationToken": "",
+    "artsyAPIClient": "",
+    "artsyAPISecret": "",
+    "serverURL": "",
+    "gravityURL": "",
+    "metaphysicsURL": "",
+    "webURL": "",
+    "databaseURL": "localhost:27017"
+}

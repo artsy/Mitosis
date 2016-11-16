@@ -1,7 +1,7 @@
 // @flow
 
 // import { handleArtworkCallbacks } from "./contexts/artwork"
-// import { handleArtistCallbacks } from "./contexts/artist"
+import { handleSettingsCallbacks, SettingsShowKey } from "./contexts/settings"
 import { handleSerendipityCallbacks, SerendipityTrendingArtists, SerendipityNewArticles } from "./contexts/serendipity"
 import { fbapi } from "../facebook/api"
 
@@ -25,7 +25,7 @@ export function handleUnknownMessage(context: MitosisUser, message: string, payl
   }
 
   if (message === "settings") {
-    fbapi.sendTextMessage(context.fbSenderID, "TODO: Settings!")
+    handleSettingsCallbacks(context, SettingsShowKey)
     return true
   }
 
