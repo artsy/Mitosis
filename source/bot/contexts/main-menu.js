@@ -1,6 +1,8 @@
 // @flow
 
 import { fbapi } from "../../facebook/api"
+import { SettingsShowKey } from "../contexts/settings"
+
 import type { MitosisUser } from "../types"
 
 export const MainMenuKey = "main-menu-show"
@@ -27,6 +29,7 @@ async function callbackForMainMenu(context: MitosisUser, payload: string) {
 export async function showMainMenu(context: MitosisUser, message: string) {
   await fbapi.quickReply(context.fbSenderID, message, [
     { content_type: "text", title: "New Articles", payload: SerendipityNewArticles },
-    { content_type: "text", title: "Trending Artists", payload: SerendipityTrendingArtists }
+    { content_type: "text", title: "Trending Artists", payload: SerendipityTrendingArtists },
+    { content_type: "text", title: "Settings", payload: SettingsShowKey }
   ])
 }

@@ -7,6 +7,8 @@ import { elementForArtwork } from "./artwork/element"
 import { elementForArticle } from "./article/element"
 import { artworkQuery, artworkRelatedArticlesQuery, artworkRelatedArtworksQuery } from "./artwork/queries"
 import { ArtistOverviewKey, ArtistFavouriteKey } from "./artist"
+import { SerendipityNewArticles } from "./serendipity"
+
 // Keys for callback resolution
 
 export const ArtworkFavouriteKey = "artwork-favourite"
@@ -65,17 +67,18 @@ async function callbackForArtworkOverview(context: MitosisUser, payload: string)
   const hasRelatedArticles = artwork.related.length > 0
 
   // Show the Artist image + link
-  await fbapi.elementCarousel(context.fbSenderID, `About Artwork ${artwork.title}`, [elementForArtwork(artwork)])
+  await fbapi.elementCarousel(context.fbSenderID, `About Artwork ${artwork.title}`, [elementForArtwork(artwork)], [])
 
   // Try show some useful info about the work, or the artist
+  let message = "Find out more about this work"
   if (artwork.description !== null) {
-    await fbapi.sendTextMessage(context.fbSenderID, artwork.description)
+    message = artwork.description
   } else if (artist.blurb !== null) {
-    await fbapi.sendTextMessage(context.fbSenderID, "About the Artist:\n\n" + artist.blurb)
+    message = "About the Artist:\n\n" + artist.blurb
   }
 
   // Offer some jump off points
-  await fbapi.quickReply(context.fbSenderID, "About Artwork", [
+  await fbapi.quickReply(context.fbSenderID, message, [
     { content_type: "text", title: "Add to Favourite", payload: `${ArtistFavouriteKey}::${artistIDAndName}` },
     { content_type: "text", title: `About ${artist.name}`, payload: `${ArtistOverviewKey}::${artistIDAndName}` },
     hasRelatedArtworks ? { content_type: "text", title: "Related Artworks", payload: `${ArtworkRelatedArtworksKey}::${artworkIDAndName}` } : null,
@@ -90,7 +93,7 @@ async function callbackForArtworkRelatedArtworks(context: MitosisUser, payload: 
   const result = await metaphysicsQuery(artworkRelatedArtworksQuery(artworkID), context)
   const artworks = result.data.artwork.related
 
-  await fbapi.elementCarousel(context.fbSenderID, `Artworks Related to ${artworkName}`, artworks.map((a) => elementForArtwork(a)))
+  await fbapi.elementCarousel(context.fbSenderID, `Artworks Related to ${artworkName}`, artworks.map((a) => elementForArtwork(a)), [])
 }
 
 // Shows related articles to an artist
@@ -99,5 +102,7 @@ async function callbackForArtworkRelatedArticles(context: MitosisUser, payload: 
 
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(artworkRelatedArticlesQuery(artworkID), context)
-  await fbapi.elementCarousel(context.fbSenderID, `Articles Related to ${artworkName}`, results.data.artwork.articles.map(a => elementForArticle(a)))
+  await fbapi.elementCarousel(context.fbSenderID, `Articles Related to ${artworkName}`, results.data.artwork.articles.map(a => elementForArticle(a)), [
+      { content_type: "text", title: "New Articles", payload: SerendipityNewArticles }
+  ])
 }

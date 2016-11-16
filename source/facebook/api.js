@@ -63,14 +63,21 @@ export const fbapi = {
  * @param {string} recipientId
  * @param {GenericElement} elements
  */
-  async elementCarousel(recipientId: string, title: string, elements: GenericElement[]) {
-    await this.sendTextMessage(recipientId, "> " + title)
+  async elementCarousel(recipientId: string, title: string, elements: GenericElement[], replies: Array<?QuickReply>) {
+    if (title && title.length) {
+      await this.sendTextMessage(recipientId, "> " + title)
+    }
+
+    const onlyReplies:any[] = replies.filter((r) => r !== null)
+    const safeReplies = onlyReplies.map((r) => sanitiseQuickReply(r))
+    const repliesAPI = onlyReplies.length > 0 ? { quick_replies: safeReplies } : {}
 
     return api({
       recipient: {
         id: recipientId
       },
       message: {
+        ...repliesAPI,
         attachment: {
           type: "template",
           payload: {

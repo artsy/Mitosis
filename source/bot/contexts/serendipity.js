@@ -33,7 +33,7 @@ async function callbackTrendingArtists(context: MitosisUser, payload: string) {
   const results = await metaphysicsQuery(trendingArtistsQuery(), context)
   const artists = results.data.trending_artists.artists
   if (artists.length) {
-    fbapi.elementCarousel(context.fbSenderID, "Trending Artists", artists.map((a) => elementForArtist(a)))
+    fbapi.elementCarousel(context.fbSenderID, "Trending Artists", artists.map((a) => elementForArtist(a)), [])
   } else {
     fbapi.quickReply(context.fbSenderID, "No Artists found, here's some of the bot author's favourites:", [
       { content_type: "text", title: "Adam Miller", payload: `${ArtistOverviewKey}::adam-miller::Adam Miller` },
@@ -49,5 +49,5 @@ async function callbackNewArticles(context: MitosisUser, payload: string) {
   fbapi.startTyping(context.fbSenderID)
   const results = await metaphysicsQuery(newArticlesQuery(), context)
   const articles = results.data.articles
-  await fbapi.elementCarousel(context.fbSenderID, "New Articles on Artsy", articles.map(a => elementForArticle(a)))
+  await fbapi.elementCarousel(context.fbSenderID, "New Articles on Artsy", articles.map(a => elementForArticle(a)), [])
 }
