@@ -1,7 +1,7 @@
 // @flow
 
 import fetch from "node-fetch"
-import { PAGE_ACCESS_TOKEN } from "../globals"
+import { PAGE_ACCESS_TOKEN, BOT_SERVER_URL } from "../globals"
 import type { QuickReply, GenericElement, FBButton } from "./types"
 
 export const fbapi = {
@@ -137,6 +137,48 @@ export const fbapi = {
     const fields = "first_name,timezone"
     const url = `https://graph.facebook.com/v2.6/${recipientId}?fields=${fields}&access_token=${PAGE_ACCESS_TOKEN}`
     return fetch(url, {method: "GET"}).then(checkStatus).then(parseJSON)
+  },
+
+  /** Starts a browser based oauth flow */
+  showLoginScreen(recipientId: string) {
+    return api({
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "button",
+            text: "Welcome. To link your account, please click below.",
+            buttons: [{
+              type: "account_link",
+              url: `${BOT_SERVER_URL}/authorize`
+            }]
+          }
+        }
+      }
+    })
+  },
+    /** Removes the browser based oauth flow */
+  showLogout(recipientId: string) {
+    return api({
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "button",
+            text: "No problem, click below to log out.",
+            buttons: [{
+              type: "account_unlink"
+            }]
+          }
+        }
+      }
+    })
   }
 }
 

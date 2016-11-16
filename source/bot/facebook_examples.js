@@ -427,6 +427,7 @@ function sendAccountLinking(recipientId: string) {
           text: "Welcome. Link your account.",
           buttons: [{
             type: "account_link",
+
             url: BOT_SERVER_URL + "/authorize"
           }]
         }
