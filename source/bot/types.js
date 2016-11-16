@@ -25,6 +25,4 @@ export interface MitosisUser {
   renderedGMTTimeForArticles?: number,
   /** Name to use _occasionally_ - I personally get annoyed if a services always uses my name */
   firstName: string,
-  /** Artsy App linking token, used temporarily for callbacks */
-  appLinkingToken?: string
 }
