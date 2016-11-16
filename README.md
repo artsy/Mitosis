@@ -31,8 +31,8 @@ If you want to see all off the potential elements we can use, say any of: `"gif"
 
 ### What is the focus?
 
-* Providing another way to subscribe to Artsy Articles
-* Offer a way to dive into some of our data
+- [x] Providing another way to subscribe to Artsy Articles
+- [x] Offer a way to dive into some of our data
 
 ### Setting up for Dev
 

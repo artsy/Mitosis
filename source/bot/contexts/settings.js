@@ -3,6 +3,7 @@
 import { fbapi } from "../../facebook/api"
 import { updateMitosisUser } from "../../db/mongo"
 import type { MitosisUser } from "../types"
+import { showMainMenu } from "./main-menu"
 
 export const SettingsShowKey = "settings-show"
 export const SettingsArticleSubscriptionKey = "settings-subscription-toggle"
@@ -23,11 +24,19 @@ export function handleSettingsCallbacks(context: MitosisUser, payload: string) {
   if (payload.startsWith(SettingsArticleSubscriptionUpdateKey)) { callbackForSettingsArticleSubscriptionUpdateToggle(context, payload) }
 }
 
+/**
+ * Shows the potential times for a user to sign up, my wife was annoyed at only
+ * having morning options, so now we also show evening options.
+ *
+ * @param {MitosisUser} context
+ */
 function showTimes(context: MitosisUser) {
   fbapi.quickReply(context.fbSenderID, "What time is good for you?", [
-      { content_type: "text", title: "6am", payload: `${SettingsArticleSubscriptionStartKey}::6` },
-      { content_type: "text", title: "7am", payload: `${SettingsArticleSubscriptionStartKey}::7` },
-      { content_type: "text", title: "8am", payload: `${SettingsArticleSubscriptionStartKey}::8` }
+      { content_type: "text", title: "6am", payload: `${SettingsArticleSubscriptionStartKey}::6::6am` },
+      { content_type: "text", title: "7am", payload: `${SettingsArticleSubscriptionStartKey}::7::7am` },
+      { content_type: "text", title: "8am", payload: `${SettingsArticleSubscriptionStartKey}::8::8am` },
+      { content_type: "text", title: "6pm", payload: `${SettingsArticleSubscriptionStartKey}::18::6pm` },
+      { content_type: "text", title: "7pm", payload: `${SettingsArticleSubscriptionStartKey}::19::7pm` }
   ])
 }
 
@@ -57,9 +66,9 @@ async function callbackForSettingsArticleSubscriptionUpdateToggle(context: Mitos
   showTimes(context)
 }
 
-// Start a new subscription with a time
+// Start a new subscription with a time, then show the main menu after confirming
 async function callbackForSettingsArticleSubscriptionStart(context: MitosisUser, payload: string) {
-  const [, hourString] = payload.split("::")
+  const [, hourString, hourPretty] = payload.split("::")
   const hour = parseInt(hourString)
   const fbData = await fbapi.getFBUserDetails(context.fbSenderID)
   const gmtHour = hour + fbData.timezone
@@ -69,7 +78,6 @@ async function callbackForSettingsArticleSubscriptionStart(context: MitosisUser,
   context.subscribeToArticlesBiDaily = true
   await updateMitosisUser(context)
 
-  await fbapi.quickReply(context.fbSenderID, `Done, you will start recieving messages at ${hour}`, [
-    { content_type: "text", title: "Expansion", payload: SettingsArticleSubscriptionKey }
-  ])
+  const congratsAndMainMenu = `Done, you will start recieving messages at ${hourPretty}.\n\nThose will start from tomorrow, in the mean time you are welcome to explore Artsy from here, you can start with these:"`
+  showMainMenu(context, congratsAndMainMenu)
 }

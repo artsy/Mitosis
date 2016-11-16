@@ -1,6 +1,8 @@
 // @flow
 
 import { fbapi } from "../facebook/api"
+import { SettingsArticleSubscriptionUpdateKey } from "./contexts/settings"
+import { MainMenuKey } from "./contexts/main-menu"
 
 /**
  * Authorization Event
@@ -30,5 +32,11 @@ export async function receivedAuthentication(event: any) {
 
   // When an authentication is received, we'll send a message back to the sender
   // to let them know it was successful.
-  fbapi.sendTextMessage(senderID, `Welcome ${details.first_name} to the Artsy bot. To get started, try saying replying with either 'trending artists' or 'new articles'`)
+  const getStarted = "To get started, try saying with either 'trending artists' or 'new articles' while we are on staging trending artists can be a bit naff."
+  const welcome = `Welcome ${details.first_name} to the Artsy bot.\n${getStarted} \n\nWould you like to sign up for new daily art world articles?`
+
+  fbapi.quickReply(senderID, welcome, [
+    { content_type: "text", title: "Yes please", payload: SettingsArticleSubscriptionUpdateKey },
+    { content_type: "text", title: "No thanks", payload: MainMenuKey }
+  ])
 }
