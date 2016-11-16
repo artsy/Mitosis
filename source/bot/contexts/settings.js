@@ -43,7 +43,7 @@ function showTimes(context: MitosisUser) {
 // Shows the Settings overview
 async function callbackForSettingsShow(context: MitosisUser, payload: string) {
   const toggleString = context.subscribeToArticlesBiDaily ? "Stop Daily Articles" : "Get Daily Articles"
-  const subscribed = context.subscribeToArticlesBiDaily ? "not subscribed" : "subscribed"
+  const subscribed = context.subscribeToArticlesBiDaily ? "subscribed" : "not subscribed"
   await fbapi.quickReply(context.fbSenderID, `You currently ${subscribed} for Article updates`, [
     { content_type: "text", title: toggleString, payload: SettingsArticleSubscriptionKey },
     context.subscribeToArticlesBiDaily ? { content_type: "text", title: "Change time", payload: SettingsArticleSubscriptionUpdateKey } : null
@@ -78,6 +78,6 @@ async function callbackForSettingsArticleSubscriptionStart(context: MitosisUser,
   context.subscribeToArticlesBiDaily = true
   await updateMitosisUser(context)
 
-  const congratsAndMainMenu = `Done, you will start recieving messages at ${hourPretty}.\n\nThose will start from tomorrow, in the mean time you are welcome to explore Artsy from here, you can start with these:"`
+  const congratsAndMainMenu = `Done, you will start recieving messages at ${hourPretty}.\n\nThose will start from tomorrow, in the mean time you are welcome to explore Artsy from here, you can start with these:`
   showMainMenu(context, congratsAndMainMenu)
 }
