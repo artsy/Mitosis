@@ -15,26 +15,27 @@ import type { MitosisUser } from "./types"
  * @param {string} payload
  */
 export function handleUnknownMessage(context: MitosisUser, message: string, payload: string): boolean {
-  // handleArtistCallbacks(context, payload)
-  // handleArtworkCallbacks(context, payload)
   console.log(`Recieved message: ${message}`)
 
-  if (message === "help") {
+  // Mobile users will have a capital first letter.
+  const userMessage = message.toLowerCase().trim()
+
+  if (userMessage === "help") {
     fbapi.sendTextMessage(context.fbSenderID, "Try saying, 'trending artists' or 'new articles' then dig around.")
     return true
   }
 
-  if (message === "settings") {
+  if (userMessage === "settings") {
     handleSettingsCallbacks(context, SettingsShowKey)
     return true
   }
 
-  if (message === "trending artists") {
+  if (userMessage === "trending artists") {
     handleSerendipityCallbacks(context, SerendipityTrendingArtists)
     return true
   }
 
-  if (message === "new articles") {
+  if (userMessage === "new articles") {
     handleSerendipityCallbacks(context, SerendipityNewArticles)
     return true
   }
