@@ -5,6 +5,7 @@ require("../db/mongo")
 
 import { elementForArticle } from "../bot/contexts/article/element"
 import { newArticlesQuery } from "../bot/contexts/article/queries"
+import { showMainMenu } from "../bot/contexts/main-menu"
 
 import { metaphysicsQuery } from "../bot/artsy-api"
 import { fbapi } from "../facebook/api"
@@ -45,7 +46,8 @@ const sendUpdates = async (hour: number) => {
 
   for (const user of users) {
     const message = `Hey there ${user.firstName}`
-    await fbapi.elementCarousel(user.fbSenderID, message, yesterdaysArticles.map(a => elementForArticle(a)))
+    await fbapi.elementCarousel(user.fbSenderID, message, yesterdaysArticles.map(a => elementForArticle(a)), [])
+    await showMainMenu(user, "You can also explore Artsy")
   }
 
   process.exit()
