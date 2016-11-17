@@ -24,9 +24,12 @@ app.set("view engine", "ejs")
 app.use(bodyParser.json())
 app.use(express.static("public"))
 
-import { validation, authorise } from "./facebook/facebook-user-creds"
+// Authorization is a two-step process
+import { validation, authoriseFacebook, authoriseArtsy } from "./facebook/facebook-user-login"
 // Handles authorizing to FB
-app.get("/authorize", authorise)
+app.get("/authorize", authoriseFacebook)
+// Handles authorizing to Artsy
+app.get("/authorize-artsy", authoriseArtsy)
 // Handles FB app setup requests
 app.get("/webhook", validation)
 

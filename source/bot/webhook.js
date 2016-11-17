@@ -7,6 +7,7 @@ import { exampleFallbacks } from "./facebook_examples"
 import { handlePostbacks } from "./postback-manager"
 import { getOrCreateMitosisUser } from "../db/mongo"
 import { handleUnknownMessage } from "./message-parser"
+import { receivedAccountLink } from "../facebook/facebook-user-login"
 
 export function botResponse(req: $Request, res: $Response) {
   var data: any = req.body
@@ -168,31 +169,6 @@ function receivedMessageRead(event: any) {
 
   console.log("Received message read event for watermark %d and sequence " +
     "number %d", watermark, sequenceNumber)
-}
-
-/*
- * Account Link Event
- *
- * This event is called when the Link Account or UnLink Account action has been
- * tapped.
- * https://developers.facebook.com/docs/messenger-platform/webhook-reference/account-linking
- *
- */
-function receivedAccountLink(event: any) {
-  var senderID = event.sender.id
-
-  var status = event.account_linking.status
-  var authCode = event.account_linking.authorization_code
-
-  // TODO: This is where we hook up a recipient to Artsy,
-  //       We should also correctly handle unauth'd users.
-  //       even though we will need to make xapp'd requests
-  //
-
-  // var recipientID = event.recipient.id
-
-  console.log("Received account link event with for user %d with status %s " +
-    "and auth code %s ", senderID, status, authCode)
 }
 
 /*

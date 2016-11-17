@@ -28,6 +28,7 @@
     "config": "^1.20.4",
     "ejs": "^2.4.2",
     "express": "^4.13.4",
+    "jsonwebtoken": "^7.1.9",
     "mongodb": "^2.2.11",
     "mongojs": "^2.4.0",
     "node-fetch": "^1.6.3"
