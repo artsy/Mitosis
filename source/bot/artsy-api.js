@@ -4,6 +4,14 @@ import fetch from "node-fetch"
 import type { GraphQLQuery, MitosisUser } from "./types"
 import { ARTSY_API_CLIENT, ARTSY_API_SECRET, GRAVITY_URL, METAPHYSICS_URL } from "../globals"
 
+/** Represents the URL to start the auth flow */
+export const oauthLoginURL = (redirect: string) => `${GRAVITY_URL}/oauth2/authorize?client_id=${ARTSY_API_CLIENT}&redirect_uri=${redirect}&response_type=code`
+
+// These are collated for you Joey
+
+export const GravityTrendingArtistsAPI = "/api/v1/artists/trending"
+export const GravityEmergingArtistsAPI = "/api/v1/artists/emerging"
+
 /**
  * Get the API header creds required to submit API requests
  *
@@ -62,6 +70,23 @@ export function gravityPost(body: any = {}, path: string, user: MitosisUser): Pr
   return fetch(`${GRAVITY_URL}${path}`, {
     method: "POST",
     body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json", ...headerAuthParams(user) }
+  })
+  .then(checkStatus)
+  .then(parseJSON)
+}
+
+/**
+ * Gravity get request
+ *
+ * @export
+ * @param {any} body
+ * @param {APIToken} apiToken
+ * @returns {Promise<any>}
+ */
+export function gravity(path: string, user: MitosisUser): Promise<any> {
+  return fetch(`${GRAVITY_URL}${path}`, {
+    method: "GET",
     headers: { "Content-Type": "application/json", ...headerAuthParams(user) }
   })
   .then(checkStatus)

@@ -24,5 +24,5 @@ export interface MitosisUser {
   /** Does the user want to get articles sent every 2 days? */
   renderedGMTTimeForArticles?: number,
   /** Name to use _occasionally_ - I personally get annoyed if a services always uses my name */
-  firstName: string
+  firstName: string,
 }

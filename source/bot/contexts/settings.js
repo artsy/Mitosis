@@ -6,6 +6,8 @@ import type { MitosisUser } from "../types"
 import { showMainMenu } from "./main-menu"
 
 export const SettingsShowKey = "settings-show"
+export const SettingsLoginKey = "settings-login"
+export const SettingsLogoutKey = "settings-logout"
 export const SettingsArticleSubscriptionKey = "settings-subscription-toggle"
 export const SettingsArticleSubscriptionStartKey = "settings-subscription-update"
 export const SettingsArticleSubscriptionUpdateKey = "settings-subscription-start"
@@ -22,6 +24,8 @@ export function handleSettingsCallbacks(context: MitosisUser, payload: string) {
   if (payload.startsWith(SettingsArticleSubscriptionKey)) { callbackForSettingsArticleSubscriptionToggle(context, payload) }
   if (payload.startsWith(SettingsArticleSubscriptionStartKey)) { callbackForSettingsArticleSubscriptionStart(context, payload) }
   if (payload.startsWith(SettingsArticleSubscriptionUpdateKey)) { callbackForSettingsArticleSubscriptionUpdateToggle(context, payload) }
+  if (payload.startsWith(SettingsLoginKey)) { callbackForLogin(context, payload) }
+  if (payload.startsWith(SettingsLogoutKey)) { callbackForLogout(context, payload) }
 }
 
 /**
@@ -44,10 +48,25 @@ function showTimes(context: MitosisUser) {
 async function callbackForSettingsShow(context: MitosisUser, payload: string) {
   const toggleString = context.subscribeToArticlesBiDaily ? "Stop Daily Articles" : "Get Daily Articles"
   const subscribed = context.subscribeToArticlesBiDaily ? "subscribed" : "not subscribed"
-  await fbapi.quickReply(context.fbSenderID, `You currently ${subscribed} for Article updates`, [
+  const loggedIn = context.artsyUserID !== undefined
+  const artsyLoggedIn = loggedIn ? "logged in" : "not logged in"
+  const artsyLoggedInTitle = loggedIn ? "Log Out" : "Log In"
+  const artsyLoggedInPayload = loggedIn ? SettingsLogoutKey : SettingsLoginKey
+
+  await fbapi.quickReply(context.fbSenderID, `You currently ${subscribed} for Article updates, and are ${artsyLoggedIn} to Artsy.`, [
     { content_type: "text", title: toggleString, payload: SettingsArticleSubscriptionKey },
+    { content_type: "text", title: artsyLoggedInTitle, payload: artsyLoggedInPayload },
     context.subscribeToArticlesBiDaily ? { content_type: "text", title: "Change time", payload: SettingsArticleSubscriptionUpdateKey } : null
   ])
+}
+
+// Shows the Settings overview
+async function callbackForLogin(context: MitosisUser, payload: string) {
+  fbapi.showLoginScreen(context.fbSenderID)
+}
+
+async function callbackForLogout(context: MitosisUser, payload: string) {
+  fbapi.showLogout(context.fbSenderID)
 }
 
 // Toggle subscription on / off. For on - it will delegate work to callbackForSettingsArticleSubscriptionStart

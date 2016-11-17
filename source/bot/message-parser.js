@@ -1,7 +1,6 @@
 // @flow
 
-// import { handleArtworkCallbacks } from "./contexts/artwork"
-import { handleSettingsCallbacks, SettingsShowKey } from "./contexts/settings"
+import { handleSettingsCallbacks, SettingsShowKey, SettingsLogoutKey, SettingsLoginKey } from "./contexts/settings"
 import { handleSerendipityCallbacks, SerendipityTrendingArtists, SerendipityNewArticles } from "./contexts/serendipity"
 import { fbapi } from "../facebook/api"
 
@@ -27,6 +26,16 @@ export function handleUnknownMessage(context: MitosisUser, message: string, payl
 
   if (userMessage === "settings") {
     handleSettingsCallbacks(context, SettingsShowKey)
+    return true
+  }
+
+  if (userMessage === "log in" || userMessage === "login") {
+    handleSettingsCallbacks(context, SettingsLoginKey)
+    return true
+  }
+
+  if (userMessage === "log out" || userMessage === "logout") {
+    handleSettingsCallbacks(context, SettingsLogoutKey)
     return true
   }
 

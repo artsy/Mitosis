@@ -30,6 +30,7 @@ export async function showMainMenu(context: MitosisUser, message: string) {
   await fbapi.quickReply(context.fbSenderID, message, [
     { content_type: "text", title: "New Articles", payload: SerendipityNewArticles },
     { content_type: "text", title: "Trending Artists", payload: SerendipityTrendingArtists },
+    { content_type: "text", title: "Emerging Artists", payload: SerendipityTrendingArtists },
     { content_type: "text", title: "Settings", payload: SettingsShowKey }
   ])
 }
