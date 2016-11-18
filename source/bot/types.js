@@ -27,4 +27,10 @@ export interface MitosisUser {
   renderedGMTTimeForArticles?: number,
   /** Name to use _occasionally_ - I personally get annoyed if a services always uses my name */
   firstName: string,
+  /** Timezone from facebook */
+  timezoneOffset: number,
+  /** last City chosen */
+  favouriteCitySlug?: string,
+  /** Artsy location city */
+  artsyLocationCitySlug?: string
 }

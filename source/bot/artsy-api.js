@@ -18,6 +18,7 @@ export const GravityTrendingArtistsAPI = "/api/v1/artists/trending"
 export const GravityEmergingArtistsAPI = "/api/v1/artists/emerging"
 export const GravityAccessTokenAPI = "/oauth2/access_token"
 export const GravityXappAPI = "/api/v1/xapp_token"
+export const GravityMeAPI = "/api/v1/me"
 
 /**
  * Get the API header creds required to submit API requests

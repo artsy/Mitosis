@@ -9,7 +9,7 @@ import { artistArtworksQuery, artistQuery, artistArticlesQuery } from "./artist/
 
 // Keys for callback resolution
 
-export const ArtistShowArtworksKey = "artist-show-artworks"
+export const ArtistShowArtworksKey = "artist-artworks-show"
 export const ArtistOverviewKey = "artist-overview"
 export const ArtistShowKey = "artist-show"
 export const ArtistFavouriteKey = "artist-favourite"

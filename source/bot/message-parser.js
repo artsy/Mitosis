@@ -2,6 +2,7 @@
 
 import { handleSettingsCallbacks, SettingsShowKey, SettingsLogoutKey, SettingsLoginKey } from "./contexts/settings"
 import { handleSerendipityCallbacks, SerendipityTrendingArtists, SerendipityNewArticles } from "./contexts/serendipity"
+import { handleShowsCallbacks, ShowsNearMeKey } from "./contexts/shows"
 import { fbapi } from "../facebook/api"
 
 import type { MitosisUser } from "./types"
@@ -46,6 +47,11 @@ export function handleUnknownMessage(context: MitosisUser, message: string, payl
 
   if (userMessage === "new articles") {
     handleSerendipityCallbacks(context, SerendipityNewArticles)
+    return true
+  }
+
+  if (userMessage === "shows") {
+    handleShowsCallbacks(context, ShowsNearMeKey)
     return true
   }
 

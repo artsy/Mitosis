@@ -31,7 +31,8 @@
     "jsonwebtoken": "^7.1.9",
     "mongodb": "^2.2.11",
     "mongojs": "^2.4.0",
-    "node-fetch": "^1.6.3"
+    "node-fetch": "^1.6.3",
+    "places": "https://github.com/artsy/places.git#orta-tz"
   },
   "engines": {
     "node": "7.1.0"
