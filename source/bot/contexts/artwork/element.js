@@ -22,3 +22,13 @@ export function elementForArtwork(artwork: any): GenericElement {
     }]
   }
 }
+
+export const elementArtworkEssentialsGraphQL = `
+id
+title
+description
+href
+images {
+  url
+}
+`

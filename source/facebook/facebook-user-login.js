@@ -11,7 +11,8 @@ import {
   getOrCreateMitosisUser,
   updateMitosisUser
 } from "../db/mongo"
-import { oauthLoginURL } from "../bot/artsy-api"
+import { oauthLoginURL, gravity, GravityMeAPI } from "../bot/artsy-api"
+import { Cities } from "places"
 
 export function validation(req: $Request, res: $Response) {
   if (req.query["hub.mode"] === "subscribe" &&
@@ -122,6 +123,18 @@ export async function receivedAccountLink(event: any) {
   const mitosisUser = await getOrCreateMitosisUser(senderID)
 
   mitosisUser.artsyOauthAppCode = lookup.artsyOauthAppCode
+
+  const artsyMe = await gravity(GravityMeAPI, mitosisUser)
+  // Use the /me API to figure out if they are in a big city, store that
+  // for doing local shows
+  if (artsyMe.location.city.length !== 0) {
+    const citySlug: string = artsyMe.location.city.toLowerCase().replace(" ", "-")
+    const maybeCity: ?any = Cities.find((c) => c.slug === citySlug)
+    if (maybeCity) {
+      mitosisUser.artsyLocationCitySlug = maybeCity.slug
+    }
+  }
+
   await updateMitosisUser(mitosisUser)
 
   fbapi.sendTextMessage(senderID, "OK - connected to Artsy!")
