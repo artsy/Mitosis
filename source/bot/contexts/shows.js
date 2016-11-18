@@ -145,7 +145,7 @@ async function callbackForShowsInferCity(context: MitosisUser, payload: string) 
     const sortedCities = Cities.sort((a, b) => a.sort_order < b.sort_order).reverse()
     fbapi.sendLongMessage(context.fbSenderID, `Sorry, we could not find your city. Here is our list of cities to work from: 
     
-${sortedCities.join(", ")}`)
+${sortedCities.map((c) => { return c.name }).join(", ")}`)
   }
 }
 

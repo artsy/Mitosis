@@ -2,12 +2,10 @@
 
 import { fbapi } from "../../facebook/api"
 import type { MitosisUser } from "../types"
-import { metaphysicsQuery, gravity, GravityTrendingArtistsAPI } from "../artsy-api"
+import { metaphysicsQuery, gravity, GravityTrendingArtistsAPI, GravityEmergingArtistsAPI } from "../artsy-api"
 import { elementForArticle } from "./article/element"
 import { elementForGravityArtist } from "./artist/element"
-import { trendingArtistsQuery } from "./serendipity/queries"
 import { newArticlesQuery } from "./article/queries"
-import { ArtistOverviewKey } from "./artist"
 
 // Keys for callback resolution
 
@@ -39,7 +37,7 @@ async function callbackTrendingArtists(context: MitosisUser, payload: string) {
 // Shows emerging artists
 async function callbackEmergingArtists(context: MitosisUser, payload: string) {
   fbapi.startTyping(context.fbSenderID)
-  const artists = await gravity(GravityTrendingArtistsAPI, context)
+  const artists = await gravity(GravityEmergingArtistsAPI, context)
   fbapi.elementCarousel(context.fbSenderID, "Trending Artists", artists.map((a) => elementForGravityArtist(a)), [])
 }
 
