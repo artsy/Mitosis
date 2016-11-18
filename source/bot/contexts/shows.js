@@ -29,6 +29,7 @@ export const ShowsShowInfo = "shows-info-show"
 export const ShowsShowPressRelease = "shows-press-release-show"
 export const ShowsShowArtworks = "shows-artworks-show"
 export const ShowsFavPartner = "shows-favourite-partner"
+export const ShowsInferCity = "shows-infer-city"
 
 /**
  * Handles pulling out the payload keys and running the appropriate function
@@ -45,6 +46,7 @@ export function handleShowsCallbacks(context: MitosisUser, payload: string) {
   if (payload.startsWith(ShowsSetMyCity)) { callbackForSetSaveAsMyCity(context, payload) }
   if (payload.startsWith(ShowsShowInfo)) { callbackForShowsInfo(context, payload) }
   if (payload.startsWith(ShowsShowPressRelease)) { callbackForShowsPressRelease(context, payload) }
+  if (payload.startsWith(ShowsInferCity)) { callbackForShowsInferCity(context, payload) }
 }
 
 // Shows a list of shows nearby, or just jumps straight into shows nearby
@@ -128,6 +130,25 @@ async function callbackForShowsSaveAsMyCity(context: MitosisUser, payload: strin
   ])
 }
 
+// Try and figure out what city the user is after
+async function callbackForShowsInferCity(context: MitosisUser, payload: string) {
+  let [, message] = payload.split("::")
+  message = message.replace("nyc", "new york")
+                   .replace("new york city", "new york")
+                   .replace("SF", "san francisco")
+                   .replace("cupertino", "san francisco")
+  const cityID = message.replace("shows in", "").trim().replace(" ", "-").replace(".", "").replace("?", "")
+  const city = Cities.find((c) => c.slug === cityID)
+  if (city) {
+    callbackShowsForCity(context, `${ShowsForCityKey}::${city.slug}::${city.name}`)
+  } else {
+    const sortedCities = Cities.sort((a, b) => a.sort_order < b.sort_order).reverse()
+    fbapi.sendLongMessage(context.fbSenderID, `Sorry, we could not find your city. Here is our list of cities to work from: 
+    
+${sortedCities.join(", ")}`)
+  }
+}
+
 // Save your location if you wanted to, thne show the city
 async function callbackForSetSaveAsMyCity(context: MitosisUser, payload: string) {
   const [, showCityID, cityName] = payload.split("::")
@@ -138,6 +159,7 @@ async function callbackForSetSaveAsMyCity(context: MitosisUser, payload: string)
   callbackShowsForCity(context, `${ShowsForCityKey}::${showCityID}::${cityName}`)
 }
 
+// Try and figure out the useful cities for a user
 function citiesForUser(context: MitosisUser): City[] {
   // Are we certain?
   if (context.artsyLocationCitySlug !== undefined) {

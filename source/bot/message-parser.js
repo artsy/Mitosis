@@ -2,7 +2,7 @@
 
 import { handleSettingsCallbacks, SettingsShowKey, SettingsLogoutKey, SettingsLoginKey } from "./contexts/settings"
 import { handleSerendipityCallbacks, SerendipityTrendingArtists, SerendipityNewArticles } from "./contexts/serendipity"
-import { handleShowsCallbacks, ShowsNearMeKey } from "./contexts/shows"
+import { handleShowsCallbacks, ShowsNearMeKey, ShowsInferCity } from "./contexts/shows"
 import { fbapi } from "../facebook/api"
 
 import type { MitosisUser } from "./types"
@@ -55,8 +55,8 @@ export function handleUnknownMessage(context: MitosisUser, message: string, payl
     return true
   }
 
-  if (userMessage === "shows in") {
-    handleShowsCallbacks(context, ShowsNearMeKey)
+  if (userMessage.startsWith("shows in")) {
+    handleShowsCallbacks(context, `${ShowsInferCity}::${userMessage}`)
     return true
   }
 

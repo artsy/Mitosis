@@ -1,6 +1,6 @@
 // @flow
 
-import { ShowsFavPartner, ShowsShowInfo, ShowsShowArtworks } from "../shows"
+import { ShowsFavPartner, ShowsShowInfo } from "../shows"
 import type { GenericElement } from "../../../facebook/types"
 import { WEB_URL } from "../../../globals"
 
