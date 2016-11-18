@@ -4,8 +4,10 @@ import { fbapi } from "../../facebook/api"
 import type { MitosisUser } from "../types"
 import { Cities } from "places"
 import { updateMitosisUser } from "../../db/mongo"
-import { GravityShowsSearchAPI, gravity } from "../artsy-api"
+import { GravityShowsSearchAPI, gravity, metaphysicsQuery } from "../artsy-api"
+import { elementForArtwork } from "./artwork/element"
 import { elementForGravityShow } from "./shows/element"
+import { showInfoQuery } from "./shows/queries"
 const querystring = require("querystring")
 
 interface City {
@@ -24,6 +26,7 @@ export const ShowsSetMyCity = "shows-set-for-my-city"
 export const ShowsForCityKey = "shows-for-city"
 export const ShowsShowKey = "shows-show"
 export const ShowsShowInfo = "shows-info-show"
+export const ShowsShowPressRelease = "shows-press-release-show"
 export const ShowsShowArtworks = "shows-artworks-show"
 export const ShowsFavPartner = "shows-favourite-partner"
 
@@ -40,6 +43,8 @@ export function handleShowsCallbacks(context: MitosisUser, payload: string) {
   if (payload.startsWith(ShowsForCityKey)) { callbackShowsForCity(context, payload) }
   if (payload.startsWith(ShowsSaveAsMyCity)) { callbackForShowsSaveAsMyCity(context, payload) }
   if (payload.startsWith(ShowsSetMyCity)) { callbackForSetSaveAsMyCity(context, payload) }
+  if (payload.startsWith(ShowsShowInfo)) { callbackForShowsInfo(context, payload) }
+  if (payload.startsWith(ShowsShowPressRelease)) { callbackForShowsPressRelease(context, payload) }
 }
 
 // Shows a list of shows nearby, or just jumps straight into shows nearby
@@ -74,6 +79,45 @@ async function callbackShowsForCity(context: MitosisUser, payload: string) {
   await fbapi.elementCarousel(context.fbSenderID, `Shows near ${city.name}`, shows.map(show => elementForGravityShow(show)), [])
 }
 
+// A show overview, showing artworks, and supports paginating through the works
+async function callbackForShowsInfo(context: MitosisUser, payload: string) {
+  const [, showID, showName, artworksPage] = payload.split("::")
+  const page = artworksPage || "1"
+  const query = showInfoQuery(showID, page)
+  const results = await metaphysicsQuery(query, context)
+  const show = results.data.show
+  const firstPage = page === "1"
+  if (firstPage) {
+    let location = show.location.display
+    if (location === null) {
+      location = `${show.location.address}, ${show.location.postal_code}`
+    }
+    await fbapi.sendTextMessage(context.fbSenderID, `${show.exhibition_period}
+${location}
+
+${show.description}
+    `)
+  }
+  if (show.artworks.length) {
+    const showPressRelease = firstPage && show.press_release !== null && show.press_release.length > 0
+    await fbapi.elementCarousel(context.fbSenderID, `Works at ${showName}`, show.artworks.map(a => elementForArtwork(a)), [
+      { content_type: "text", title: "More Artworks", payload: `${ShowsShowInfo}::${showID}::${showName}::${parseInt(page) + 1}` },
+      showPressRelease ? { content_type: "text", title: "Press Release", payload: `${ShowsShowPressRelease}::${showID}::${showName}` } : null
+    ])
+  } else {
+    await fbapi.sendTextMessage(context.fbSenderID, "That's all of the artworks for the show.")
+  }
+}
+
+// Show just the press release, they are long so don't do it on info
+async function callbackForShowsPressRelease(context: MitosisUser, payload: string) {
+  const [, showID] = payload.split("::")
+  const query = showInfoQuery(showID, "1")
+  const results = await metaphysicsQuery(query, context)
+  const show = results.data.show
+  await fbapi.sendLongMessage(context.fbSenderID, show.press_release)
+}
+
 // If you have choosen a city, let it be the default
 async function callbackForShowsSaveAsMyCity(context: MitosisUser, payload: string) {
   const [, showCityID, cityName] = payload.split("::")
@@ -90,7 +134,7 @@ async function callbackForSetSaveAsMyCity(context: MitosisUser, payload: string)
   context.artsyLocationCitySlug = showCityID
   fbapi.startTyping(context.fbSenderID)
   await updateMitosisUser(context)
-  fbapi.sendTextMessage(context.fbSenderID, `Set ${cityName} as your local city.`)
+  fbapi.sendTextMessage(context.fbSenderID, `Set ${cityName} as your local city. You can say "shows" at any time to see shows in ${cityName}`)
   callbackShowsForCity(context, `${ShowsForCityKey}::${showCityID}::${cityName}`)
 }
 
@@ -109,6 +153,6 @@ function citiesForUser(context: MitosisUser): City[] {
 
   // And then the rest in the timezone
   const citiesInTimezone = Cities.filter((c) => Math.round(c.timezone) === Math.round(context.timezoneOffset))
-  const sortedCities = citiesInTimezone.sort((a, b) => a.sort_order > b.sort_order)
+  const sortedCities = citiesInTimezone.sort((a, b) => a.sort_order < b.sort_order).reverse()
   return cities.concat(sortedCities)
 }

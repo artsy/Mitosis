@@ -17,7 +17,7 @@ export const fbapi = {
    */
   quickReply(recipientId: string, title: ?string, replies: Array<?QuickReply>) {
     // Break the types so that we can go from `?QuickReply` to `QuickReply`
-    const onlyReplies:any[] = replies.filter((r) => r !== null)
+    const onlyReplies:any[] = replies.filter((r) => r !== null).slice(0, 10)
     return api({
       recipient: {
         id: recipientId
@@ -69,7 +69,7 @@ export const fbapi = {
     }
 
     const onlyReplies:any[] = replies.filter((r) => r !== null)
-    const safeReplies = onlyReplies.map((r) => sanitiseQuickReply(r))
+    const safeReplies = onlyReplies.map((r) => sanitiseQuickReply(r)).slice(0, 10)
     const repliesAPI = onlyReplies.length > 0 ? { quick_replies: safeReplies } : {}
 
     return api({

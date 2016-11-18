@@ -50,7 +50,12 @@ export function handleUnknownMessage(context: MitosisUser, message: string, payl
     return true
   }
 
-  if (userMessage === "shows") {
+  if (userMessage === "shows" || userMessage === "shows neaby") {
+    handleShowsCallbacks(context, ShowsNearMeKey)
+    return true
+  }
+
+  if (userMessage === "shows in") {
     handleShowsCallbacks(context, ShowsNearMeKey)
     return true
   }

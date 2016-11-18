@@ -18,12 +18,7 @@ export function elementForGravityShow(show: any): GenericElement {
     }, {
       type: "postback",
       title: "More info",
-      payload: `${ShowsShowInfo}::${show.id}::${show.name}`
-    },
-    {
-      type: "postback",
-      title: "Artworks",
-      payload: `${ShowsShowArtworks}::${show.id}::${show.name}::1`
+      payload: `${ShowsShowInfo}::${show.id}::${show.name}::1`
     }]
   }
 }

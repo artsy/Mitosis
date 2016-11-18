@@ -2935,7 +2935,7 @@ pkg-up@^1.0.0:
 
 "places@https://github.com/artsy/places.git#orta-tz":
   version "0.0.1"
-  resolved "https://github.com/artsy/places.git#d6c8b898452425fd029b3a5e4119878c2c4ba591"
+  resolved "https://github.com/artsy/places.git#aea9942a3a359059f7fa32d977908b94d18c701f"
   dependencies:
     underscore "*"
 
