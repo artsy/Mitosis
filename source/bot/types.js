@@ -11,9 +11,11 @@ export type APIToken = string
  * No functions, needs to be storable in db.
  */
 export interface MitosisUser {
-  /** Guest token */
+  /** Guest Xapp token */
   xappToken?: APIToken,
-  /** Logged in user token */
+  /** To re-auth with a user-token we need to re-use this key */
+  artsyOauthAppCode?: string,
+  /** Logged in user OAuth2 token */
   userToken?: APIToken,
   /** the Facebook chat sender ID */
   fbSenderID: string,
@@ -21,7 +23,7 @@ export interface MitosisUser {
   artsyUserID?: string,
   /** Does the user want to get articles sent every 2 days? */
   subscribeToArticlesBiDaily: boolean,
-  /** Does the user want to get articles sent every 2 days? */
+  /** What time, in GMT should we send them articles? */
   renderedGMTTimeForArticles?: number,
   /** Name to use _occasionally_ - I personally get annoyed if a services always uses my name */
   firstName: string,

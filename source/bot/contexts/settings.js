@@ -48,7 +48,7 @@ function showTimes(context: MitosisUser) {
 async function callbackForSettingsShow(context: MitosisUser, payload: string) {
   const toggleString = context.subscribeToArticlesBiDaily ? "Stop Daily Articles" : "Get Daily Articles"
   const subscribed = context.subscribeToArticlesBiDaily ? "subscribed" : "not subscribed"
-  const loggedIn = context.artsyUserID !== undefined
+  const loggedIn = context.artsyOauthAppCode !== undefined
   const artsyLoggedIn = loggedIn ? "logged in" : "not logged in"
   const artsyLoggedInTitle = loggedIn ? "Log Out" : "Log In"
   const artsyLoggedInPayload = loggedIn ? SettingsLogoutKey : SettingsLoginKey

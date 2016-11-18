@@ -2,7 +2,6 @@
 
 const mongojs = require("mongojs")
 
-import { getXappToken } from "../bot/artsy-api"
 import { fbapi } from "../facebook/api"
 
 import type { MitosisUser } from "../bot/types"
@@ -25,7 +24,6 @@ export async function getOrCreateMitosisUser(senderID: string): Promise<MitosisU
       if (doc) { return resolve(doc) }
 
       // Make a new one if not
-      const data = await getXappToken()
       let fbData = { timezone: 1, first_name: "The Bot" }
       try {
         // Ensure that we have all the data we want from fb
@@ -36,7 +34,6 @@ export async function getOrCreateMitosisUser(senderID: string): Promise<MitosisU
       // Insert a new model
       const newUser: MitosisUser = {
         fbSenderID: senderID,
-        xappToken: data.xapp_token,
         subscribeToArticlesBiDaily: false,
         timeForBiDailySub: 0,
         timezoneOffset: fbData.timezone,

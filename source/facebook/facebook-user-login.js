@@ -52,6 +52,9 @@ export function validation(req: $Request, res: $Response) {
 // if it is successful, then it deletes it and sets the OAuth token on the mitosis
 // user account and we are done. Phew.
 
+// We're using this auth flow:
+// https://github.com/artsy/gravity/blob/master/doc/ApiAuthentication.md#login-using-oauth-web-browser-redirects
+
 // An express route for initially setting up authorization
 export async function authoriseFacebook(req: $Request, res: $Response) {
   // Facebook's user token for the authentication setup
@@ -86,12 +89,12 @@ export async function authoriseArtsy(req: $Request, res: $Response) {
   // is confirmed, so we need to keep track
 
   const requestID = req.query.requestID
-  const token = req.query.code
 
-  // Get the old token details, now that we have an Artsy API token
-  // we can add it
+  // This returns a code, which we can turn into a token whenever we want
+  const oauthCode = req.query.code
+  // Store it so we can generate access tokens on the next gravity request
   const creds = await getOrCreateArtsyLookup({ requestID })
-  creds.artsyOAuthToken = token
+  creds.artsyOauthAppCode = oauthCode
   await updateArtsyLookup(creds)
 
   // Redirect users to this URI on successful login
@@ -118,7 +121,7 @@ export async function receivedAccountLink(event: any) {
   const lookup = await getAndDeleteArtsyLookup({ requestID: authCode })
   const mitosisUser = await getOrCreateMitosisUser(senderID)
 
-  mitosisUser.userToken = lookup.artsyOAuthToken
+  mitosisUser.artsyOauthAppCode = lookup.artsyOauthAppCode
   await updateMitosisUser(mitosisUser)
 
   fbapi.sendTextMessage(senderID, "OK - connected to Artsy!")
